@@ -160,3 +160,5 @@ cython_debug/
 #.idea/
 
 data/
+code/PretrainedModel/dffnetv2B0.h5
+code/PretrainedModel/dffnetv2B0.json

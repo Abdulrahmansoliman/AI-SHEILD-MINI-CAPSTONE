@@ -96,27 +96,23 @@ This project provides pre-trained models as out-of-the-box solutions for busines
 
 Download pre-reqs
 ```sh
-pip install streamlit
-pip install tensorflow
+pip install -r requirements.txt
 ```
 Clone repo
 ```sh
 git clone https://github.com/cdenq/deepfake-image-detector.git 
 ```
-Navigate to models folder and unzip
+Navigate to the project root
 ```sh
-cd deepfake-image-detector/code/PretrainedModel/
-unzip dffnetv2B0.zip
+cd deepfake-image-detector
 ```
-Navigate to streamlit folder
+Run the deployable frontend
 ```sh
-cd streamlit_deepfake_detector
+streamlit run app.py
 ```
-Activate virtual environment in which you downloaded the pre-reqs into
-```sh
-source activate your_envs
-streamlit run multipage_app.py
-```
+The app will unpack `code/PretrainedModel/dffnetv2B0.zip` automatically if the extracted model files are not already present.
+
+See `DEPLOYMENT.md` for Streamlit Community Cloud deployment notes.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <a name="started-usage"></a>
