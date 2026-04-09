@@ -286,7 +286,7 @@ def render_prediction(results: dict[str, float | str | Image.Image], caption: st
     image_col, result_col = st.columns([1.15, 0.85], gap="large")
 
     with image_col:
-        st.image(results["image"], caption=caption, use_container_width=True)
+        st.image(results["image"], caption=caption, use_column_width=True)
 
     with result_col:
         tone = "#0b6e4f" if results["label"] == "Real" else "#cb4b16"
