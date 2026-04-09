@@ -352,13 +352,12 @@ def detector_tab(model) -> None:
 
 def sample_tab(model) -> None:
     samples = list_sample_images()
-    label = st.segmented_control(
+    label = st.radio(
         "Browse example images",
         options=list(samples.keys()),
-        default=list(samples.keys())[0],
+        index=0,
+        horizontal=True,
     )
-    if label is None:
-        label = list(samples.keys())[0]
 
     names = [path.name for path in samples[label]]
     selected_name = st.selectbox("Sample image", names)
