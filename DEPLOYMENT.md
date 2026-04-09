@@ -24,10 +24,12 @@ The app loads the pretrained model from `code/PretrainedModel/dffnetv2B0.zip`. I
    - repository: this repo
    - branch: your deployment branch
    - main file path: `app.py`
-3. Keep `requirements.txt` in the repo root so Streamlit installs TensorFlow, Streamlit, Pillow, NumPy, and Pandas.
+3. In **Advanced settings**, choose **Python 3.11**.
+4. Keep `requirements.txt` in the repo root so Streamlit installs TensorFlow, Streamlit, Pillow, NumPy, and Pandas.
 
 ## Notes
 
 - The model is relatively heavy because it uses TensorFlow and a pretrained weight file.
 - The original project reports higher validation performance than held-out test performance, so deployment should present predictions as probabilistic guidance rather than ground truth.
 - The existing sample gallery under `code/PretrainedModel/streamlit_deepfake_detector/images` is already wired into the new app.
+- If you already created the app with the wrong Python version, delete it and redeploy with Python 3.11.
