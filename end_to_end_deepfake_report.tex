@@ -12,6 +12,7 @@
 \usepackage{hyperref}
 \usepackage{xcolor}
 \usepackage{pgfplots}
+\usepackage{amsmath}
 
 \pgfplotsset{compat=1.18}
 \graphicspath{{repo/screenshots/}}
@@ -106,6 +107,163 @@ The training and evaluation workflow uses standard binary-classification metrics
 \end{itemize}
 
 These metrics were tracked during training and then compared on the validation set. The repository also preserves a final test-set evaluation for the selected EfficientNetV2-B0 model.
+
+\section{How the Best Model Actually Learns}
+
+The most important machine-learning point in this project is that the detector is \textbf{not} a handwritten rule system. There is no explicit instruction in the code such as ``if the eyes look wrong, predict fake'' or ``if the skin texture is too smooth, predict fake.'' Instead, the model learns a nonlinear function
+\[
+f(x) \rightarrow p(\text{real}\mid x)
+\]
+from labeled examples, where \(x\) is an image and the output is a score between 0 and 1. In the deployed app, that score is interpreted as the probability that the input image is real. The frontend then uses a simple threshold:
+\[
+p \ge 0.50 \Rightarrow \text{Real}, \qquad p < 0.50 \Rightarrow \text{Fake}.
+\]
+
+\subsection{Input Representation}
+
+The entire pipeline standardizes images before they reach the classifier:
+\begin{itemize}[leftmargin=1.5em]
+    \item images are loaded as \textbf{RGB} tensors,
+    \item each image is resized to \textbf{256 x 256},
+    \item labels are binary: \textbf{real} or \textbf{fake},
+    \item batches of \textbf{64} images are passed into the model during training.
+\end{itemize}
+
+This design is important because a CNN can only learn stable filters if the input format is consistent. If different models were trained on different image sizes or different normalization conventions, architecture comparison would be much less meaningful.
+
+\subsection{Saved Architecture of the Deployment Model}
+
+The preserved \texttt{dffnetv2B0.json} model file shows that the deployed detector is a \textbf{Sequential} model built from:
+\begin{enumerate}[leftmargin=1.5em]
+    \item an input layer for \textbf{256 x 256 x 3} images,
+    \item a \textbf{Rescaling} layer that converts raw pixel values into a normalized numeric range,
+    \item a \textbf{Normalization} layer with channel statistics aligned with ImageNet-style preprocessing,
+    \item an \textbf{EfficientNetV2-B0} backbone used as a feature extractor,
+    \item a \textbf{GlobalMaxPooling2D} layer that compresses the final feature maps into a single feature vector,
+    \item a final \textbf{Dense} layer with \textbf{1 sigmoid unit} that outputs the real-image score.
+\end{enumerate}
+
+So, from an architectural point of view, the model takes a full image, converts it into a stack of learned feature maps, compresses those maps into a compact representation, and then maps that representation to a probability-like scalar.
+
+\subsection{Why EfficientNetV2-B0 Was a Strong Choice}
+
+EfficientNetV2-B0 is a transfer-learning model rather than a CNN trained entirely from scratch. The training notebook shows that the best model was initialized with \textbf{ImageNet weights}, \textbf{include\_top=False}, \textbf{pooling='max'}, and then given a single-task binary output head with \texttt{Dense(1, activation='sigmoid')}. This matters because pretrained weights already encode a large amount of generic visual knowledge:
+\begin{itemize}[leftmargin=1.5em]
+    \item edge detectors,
+    \item color and contrast filters,
+    \item texture detectors,
+    \item shape fragments,
+    \item progressively more abstract object-part representations.
+\end{itemize}
+
+That prior knowledge dramatically reduces the amount of task-specific data and training time needed to build a useful detector. Instead of learning all visual primitives from random initialization, the model starts from a backbone that already understands general image structure and then adapts those features to the real-vs-fake classification problem.
+
+There is also an important distinction between \textbf{transfer learning} and \textbf{fine-tuning}. The tutorial notebook demonstrates a frozen-backbone setup in which only the last classifier layer is trained. In contrast, the final best-model training notebook sets the EfficientNetV2-B0 backbone to \textbf{trainable = True}. That means the deployed model is not merely using EfficientNet as a fixed feature extractor; it is \textbf{fine-tuned end to end}. The model summary in the notebook reports:
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{5,920,593 total parameters},
+    \item \textbf{5,859,985 trainable parameters},
+    \item \textbf{60,608 non-trainable parameters}.
+\end{itemize}
+
+That is a major reason the final model can specialize so strongly to deepfake artifacts.
+
+\subsection{What the Layers Are Doing}
+
+\paragraph{Convolutional layers.}
+Convolutional layers apply small learned filters across the image. Early in the network, these filters usually respond to local visual structures such as:
+\begin{itemize}[leftmargin=1.5em]
+    \item edges,
+    \item corners,
+    \item color transitions,
+    \item fine texture changes,
+    \item local frequency patterns.
+\end{itemize}
+
+Because the same filter is reused across spatial positions, the model learns location-tolerant detectors. In practical terms, a suspicious blending boundary around the cheek or jaw can be detected by similar filters even if it appears in different image positions.
+
+\paragraph{Batch normalization and activation layers.}
+The saved model contains repeated \textbf{BatchNormalization} and \textbf{swish activation} blocks. Batch normalization helps stabilize optimization by controlling the scale of activations flowing through the network. Swish introduces nonlinearity, allowing the network to represent far more complex decision boundaries than a purely linear model could.
+
+\paragraph{EfficientNetV2 blocks.}
+EfficientNetV2 uses highly optimized convolutional blocks, including fused convolution-style stages and later mobile-style bottleneck stages with channel expansion, projection, and attention-like recalibration. In the saved architecture this appears as repeated block patterns with convolution, normalization, swish activation, residual additions, and squeeze-and-excitation style components.
+
+\paragraph{Squeeze-and-excitation behavior.}
+The architecture includes global pooling and channel reweighting submodules. Conceptually, these layers allow the model to ask which feature channels matter most for the current image. If one image strongly activates channels associated with unnatural skin texture or synthesis artifacts, the network can amplify those channels before the final decision.
+
+\paragraph{Global pooling and classifier head.}
+Near the end of the network, feature maps are compressed using \textbf{GlobalMaxPooling2D}. This converts spatial evidence into a summary vector. The final dense sigmoid unit then converts that high-level representation into a score for the real class. This is the simplest part of the model mathematically, but it only works because the preceding backbone has already transformed the raw pixels into informative features.
+
+\subsection{What It Means to ``Learn Patterns''}
+
+When people say that the model learns patterns, they do \emph{not} mean that it memorizes explicit textual criteria. The learning process is numerical. Every layer contains trainable weights. During training, the model sees an image, makes a prediction, compares that prediction to the true label, computes an error, and then adjusts the weights slightly to reduce future error.
+
+For the best model, the training notebook shows the use of:
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Adam} optimization,
+    \item learning rate \(\mathbf{1 \times 10^{-5}}\),
+    \item binary cross-entropy loss.
+\end{itemize}
+
+The binary cross-entropy objective for a single example is:
+\[
+\mathcal{L}(y,p) = -\left[y \log(p) + (1-y)\log(1-p)\right],
+\]
+where \(y \in \{0,1\}\) is the true label and \(p\) is the predicted real-image probability.
+
+This loss has useful behavior:
+\begin{itemize}[leftmargin=1.5em]
+    \item if the image is real and the model predicts a low \(p\), the loss becomes large,
+    \item if the image is fake and the model predicts a high \(p\), the loss also becomes large,
+    \item if the prediction is confident and correct, the loss becomes small.
+\end{itemize}
+
+Backpropagation then computes gradients of this loss with respect to every trainable weight in the network. Adam uses those gradients to update the weights. Over many batches and epochs, filters that are useful for distinguishing real from fake are strengthened, while unhelpful filters are weakened.
+
+\subsection{Which Visual Cues the Model Is Probably Using}
+
+The repository does not preserve a formal explainability study such as Grad-CAM maps or feature-attribution analysis, so the exact internal logic of every prediction is not directly visible. However, based on the task, the dataset, and the architecture, the most defensible interpretation is that the model learns statistical evidence such as:
+\begin{itemize}[leftmargin=1.5em]
+    \item unnatural skin smoothness or pore statistics,
+    \item inconsistent high-frequency detail in hair, eyebrows, eyelashes, and facial boundaries,
+    \item blending artifacts near the jawline, ears, teeth, or background transitions,
+    \item synthetic lighting or shading inconsistencies,
+    \item abnormal noise and compression patterns,
+    \item resampling or upscaling artifacts,
+    \item mismatches between local realism and global facial structure.
+\end{itemize}
+
+These are \textbf{learned statistical cues}, not hardcoded rules. The network may rely on combinations of many weak cues rather than one obvious artifact. For example, a face could look plausible to a human viewer but still carry subtle numerical irregularities across texture, frequency content, and boundary transitions that shift the model toward the fake class.
+
+\subsection{Hierarchical Feature Learning}
+
+CNNs are effective because they build features hierarchically:
+\begin{enumerate}[leftmargin=1.5em]
+    \item early layers learn very local and generic patterns,
+    \item middle layers combine those into motifs such as repeated textures, facial components, or boundary structures,
+    \item deep layers combine many local cues into a semantic representation useful for the real/fake decision.
+\end{enumerate}
+
+This hierarchy explains why transfer learning works well. ImageNet pretraining already teaches the lower and middle layers many reusable filters. Fine-tuning then nudges them toward the domain-specific goal of forgery detection.
+
+\subsection{Why the Model Can Generalize, and Why It Sometimes Fails}
+
+Generalization occurs when the model learns features that reflect the underlying differences between real and fake images rather than merely memorizing the training set. The high validation accuracy suggests that EfficientNetV2-B0 learned a useful decision boundary for the project data distribution.
+
+However, the gap between validation and test performance shows that the learned representation is \textbf{not perfectly invariant} to distribution shift. The repository explicitly notes that the harder test set contains additional perturbations such as blur, Gaussian noise, and pixel-level alterations. That means the model is being asked to recognize fakes under conditions that were not sufficiently represented during training.
+
+In machine-learning terms, the model learned a decision boundary that works well on one distribution but degrades on a shifted distribution. This is why stronger augmentation and more diverse training corruption would likely improve robustness.
+
+\subsection{How the Deployed App Uses the Model}
+
+The deployed frontend does not call an external detection API. It loads the saved \texttt{.json} architecture and \texttt{.h5} weights locally with TensorFlow/Keras, preprocesses the uploaded image, and runs \texttt{model.predict()} directly. The prediction pipeline is therefore:
+\begin{enumerate}[leftmargin=1.5em]
+    \item user uploads an image,
+    \item the image is converted to RGB and resized to \textbf{256 x 256},
+    \item the model produces a scalar real-image score,
+    \item the frontend converts that score into \textbf{Real} or \textbf{Fake} using the \(0.50\) threshold.
+\end{enumerate}
+
+So the deployed app is a thin inference wrapper around the trained CNN. The machine-learning intelligence is in the saved model weights, not in an external service and not in frontend logic.
 
 \section{Validation Results}
 
