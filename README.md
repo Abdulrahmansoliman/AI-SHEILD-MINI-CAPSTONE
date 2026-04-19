@@ -1,205 +1,294 @@
-<!-- Back to top -->
-<a name="readme-top"></a>
+# From Deepfake Detector to AI Shield
 
-<!-- PROJECT LOGO -->
-<br />
-<div align="center">
-  <a href="https://github.com/cdenq/sacramento-real-estate-eda">
-    <img src="repo/assets/project_header_image.jpg" alt="Logo" width="250" height="100">
-  </a>
+<p align="center">
+  <img src="repo/assets/project_header_image.jpg" alt="Project header" width="520">
+</p>
 
-  <h3 align="center">Deepfake Image Detector</h3>
+<p align="center">
+  An iterative Computational Sciences capstone project that started as a deployable image-level deepfake detector and is now expanding toward a broader AI Shield for images first and video later.
+</p>
 
-  <p align="center">
-    CNN models trained to detect whether an image has been manipulated (deepfake). 
-    <br />
-    <br />
-    <a href="https://github.com/cdenq/">GitHub Home</a>
-    ·
-    <a href="https://github.com/cdenq/deepfake-image-detector/issues">Report Bug </a>
-    ·
-    <a href="https://github.com/cdenq/my-directory">All Projects </a>
-  </p>
-</div>
+<p align="center">
+  <img src="repo/assets/deepfake.gif" alt="App demo" width="760">
+</p>
 
-<!-- Table of Contents -->
-# Table of Contents
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#live-demo">Live Demo</a>
-    </li>
-    <li>
-      <a href="#exe-sum">Executive Summary</a>
-    </li>
-    <li>
-      <a href="#started">Getting Started</a>
-      <ul>
-        <li><a href="#started-setup">Setup</a></li>
-        <li><a href="#started-usage">Usage</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#about">About The Project</a>
-      <ul>
-        <li><a href="#about-ps">Problem Statement</a></li>
-        <li><a href="#about-bw">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#process">Process</a>
-      <ul>
-        <li><a href="#process-setup">Data Sourcing, Cleaning</a></li>
-        <li><a href="#process-work">Modeling, Analysis</a></li>
-      </ul>
-    </li>
-        <li>
-      <a href="#results">Results</a>
-      <ul>
-        <li><a href="#results-screen">Screenshots</a></li>
-        <li><a href="#results-conclusion">Conclusions</a></li>
-        <li><a href="#results-uncertain">Uncertanities</a></li>
-      </ul>
-    </li>
-    <li><a href="#contact">Contact</a></li>
-  </ol>
-</details>
+## Overview
 
-<!-- DEMO -->
-<a name="live-demo"></a>
-# Live Demo
-<img src="repo/assets/deepfake.gif">
+This repository currently contains two connected tracks:
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+1. A completed, deployed image detector built on OpenForensics and EfficientNetV2-B0.
+2. A new phase-1 pilot pipeline built on Tiny-GenImage in Google Colab, which is the first concrete step toward a broader multi-layer AI Shield.
 
-<!-- Header -->
-<a name="exe-sum"></a>
-# Executive Summary
+The project changed after stress-testing revealed that high benchmark performance on face-centered real/fake classification is not the same as solving authenticity. Cases such as Gandhi taking a selfie, Photoshop-style edited portraits, and AI-edited photos of people showed that a stronger system needs more than one classifier.
 
-In an effort to combat a rising risks associated with accessible generative AI known as deepfakes, this project seeks to create a strong deepfake detector using 11 convolutional neural nets (CNNs). Data was taken from OpenForensics (an open-source dataset of labeled real and fake images), preprocessed, and fitted to 2 types of architectures of CNNs: Sequential models and EfficientNet models. The end result of these models peaked at a validation accuracy of 0.965 and precision of 0.992, with the strongest recommended model being the EfficientNet_v2B0 (located in our pre-trained models folder). Thus, we recommended using the EfficientNet_v2B0 model for detecting the difference between deepfakes and real photographs.
+That is why the longer-term roadmap now has four image phases:
 
-This project provides pre-trained models as out-of-the-box solutions for business needs, saving users the time and compute! 
+- Phase 1: Low-level forensics
+- Phase 2: Semantic consistency
+- Phase 3: Context verification
+- Phase 4: Provenance
 
-<img src="repo/screenshots/image2.jpg">
-<img src="repo/screenshots/image1.jpg">
-<img src="repo/screenshots/image0.jpg">
+The video branch comes after the image pipeline is stable.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+---
 
-<!-- ABOUT THE PROJECT -->
-<a name="started"></a>
-# Getting Started
+## What Is In The Repo Right Now
 
-<a name="started-setup"></a>
-## Setup
+| Track | Status | Data | Main model | Main artifact |
+|---|---|---|---|---|
+| OpenForensics detector | Completed and deployed | OpenForensics | EfficientNetV2-B0 | `code/PretrainedModel/dffnetv2B0.zip` |
+| Tiny-GenImage pilot | Experimental, first new-pipeline run | Hugging Face `TheKernel01/Tiny-GenImage` | EfficientNet-B0 | `best.pt` |
+| Streamlit app | Usable | Uses the OpenForensics detector | TensorFlow / Keras | `app.py` |
+| Tiny-GenImage notebook | Reproducible training notebook | Google Colab + Google Drive | PyTorch / timm | `phase1_tiny_genimage_effnet_vae (3).ipynb` |
 
-Download pre-reqs
-```sh
+Important distinction:
+
+- The deployed app currently uses the OpenForensics EfficientNetV2-B0 model.
+- The Tiny-GenImage pilot weights in `best.pt` are not yet wired into the app.
+
+---
+
+## Results At A Glance
+
+### 1. Completed OpenForensics detector
+
+The strongest preserved model from the first iteration is EfficientNetV2-B0.
+
+| Metric | Validation | Held-out test |
+|---|---:|---:|
+| Accuracy | 0.9651 | 0.8577 |
+| Precision | 0.9919 | 0.9188 |
+| Recall | 0.9498 | 0.7828 |
+| AUC | 0.9824 | 0.9387 |
+
+These results come from the saved evaluation artifacts in:
+
+- `code/results/model_eval.csv`
+- `code/results/v2b0_history.csv`
+
+### 2. Tiny-GenImage pilot
+
+The new image pipeline was first tested in Google Colab on a balanced pilot subset:
+
+- 4,000 training images
+- 1,000 validation images
+- trained for 8 epochs
+
+Pilot validation result:
+
+- Validation AUC: 0.8503
+- Validation accuracy: 0.7710
+
+This is a pipeline-establishment run, not the final target. The full Tiny-GenImage scale discussed in the notebook is 28K+ images, and the current pilot was intentionally constrained by time and storage limits.
+
+---
+
+## Why The Project Changed
+
+The first detector answered a narrower question:
+
+> "Does this image look statistically similar to the real and fake face images the model saw during training?"
+
+That is useful, but it is not the same as:
+
+> "Is this image authentic?"
+
+The difference matters. A model can score an image as visually plausible while still missing:
+
+- semantic inconsistencies
+- contextual impossibilities
+- provenance problems
+- non-face edit patterns outside its training distribution
+
+This is why the project now uses an AI Shield framing rather than pretending one benchmark classifier solves the whole problem.
+
+---
+
+## Data Sources
+
+### OpenForensics
+
+Used for the first completed detector.
+
+- Focus: real vs fake face-centered imagery
+- Role in this repo: deployed first iteration and benchmark baseline
+- Reference: `Le et al., ICCV 2021`
+
+### Tiny-GenImage
+
+Used for the new phase-1 pilot.
+
+- Source: Hugging Face dataset `TheKernel01/Tiny-GenImage`
+- Role in this repo: broader real-vs-AI image pilot for the redesigned pipeline
+- Training environment: Google Colab with Google Drive artifact storage
+
+Planned future data additions:
+
+- edited-image benchmarks for Photoshop-style and AI-edited photos
+- provenance-oriented data and metadata-rich sources
+- later video datasets for temporal detection
+
+---
+
+## Run The Current App
+
+The current Streamlit app loads the OpenForensics EfficientNetV2-B0 detector.
+
+### 1. Install dependencies
+
+```bash
 pip install -r requirements.txt
 ```
-Clone repo
-```sh
-git clone https://github.com/cdenq/deepfake-image-detector.git 
-```
-Navigate to the project root
-```sh
-cd deepfake-image-detector
-```
-Run the deployable frontend
-```sh
+
+### 2. Start the app
+
+```bash
 streamlit run app.py
 ```
-The app will unpack `code/PretrainedModel/dffnetv2B0.zip` automatically if the extracted model files are not already present.
 
-See `DEPLOYMENT.md` for Streamlit Community Cloud deployment notes.
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+### 3. Model loading behavior
 
-<a name="started-usage"></a>
-## Usage
+The app expects the deployed TensorFlow model in:
 
-You are now able to choose between the `Detector` and `Game` modes to upload / check if images are deepfakes!
+- `code/PretrainedModel/dffnetv2B0.zip`
 
-NOTE: This detector is trained on real and altered humans, meaning it struggles with cartoons or drawn images! The best performance comes with photo-realistic images.
+If the extracted files are missing, the app automatically unpacks:
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+- `code/PretrainedModel/dffnetv2B0.json`
+- `code/PretrainedModel/dffnetv2B0.h5`
 
-<!-- ABOUT THE PROJECT -->
-<a name="about"></a>
-# About
+Deployment notes are in:
 
-<a name="about-ps"></a>
-## Problem Statement
+- [`DEPLOYMENT.md`](DEPLOYMENT.md)
 
-The rapid evolution of generative artificial intelligence (GPAI, LLMs) has rapidly increased the public’s access to powerful, deceptive tools. One such concern is the increasing prevalence of deepfake images, which pose a significant threat to public trust and undermines the epistemic integrity of visual media. These manipulated images can be utilized to spread false information, manipulate public opinion, and polarize communities, which can have serious consequences for both social and political discourse. 
+---
 
-In this project, we aim to combat the spread of AI risks by developing a deep learning model that can detect differences between deepfakes and real images to combat the spread of manipulated visual media and protect the integrity of social discourse. We will use the precision score 
+## Tiny-GenImage Pilot Notebook
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+The new-pipeline pilot was trained in:
 
-<a name="about-bw"></a>
-## Built With
+- [`phase1_tiny_genimage_effnet_vae (3).ipynb`](phase1_tiny_genimage_effnet_vae%20(3).ipynb)
 
-<img src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue">
-<img src="https://img.shields.io/badge/scikit_learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white">
-<img src="https://img.shields.io/badge/Pandas-2C2D72?style=for-the-badge&logo=pandas&logoColor=white">
-<img src="https://img.shields.io/badge/Matplotlib-%23ffffff.svg?style=for-the-badge&logo=Matplotlib&logoColor=black">
-<img src="https://img.shields.io/badge/STREAMLIT-1CE783?style=for-the-badge&logo=streamlit&logoColor=white">
+The notebook does the following:
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+- mounts Google Drive in Colab
+- downloads Tiny-GenImage from Hugging Face
+- creates a balanced subset for a practical first run
+- trains an EfficientNet-B0 pilot
+- saves:
+  - `best.pt`
+  - `last.pt`
+  - `history.json`
+  - `training_performance_v1.png`
 
-<!-- ABOUT THE PROJECT -->
-<a name="process"></a>
-# Process
+Typical Colab packages for this notebook include:
 
-<a name="process-setup"></a>
-## Data Collection and Cleaning
+- `torch`
+- `torchvision`
+- `timm`
+- `datasets`
+- `scikit-learn`
+- `matplotlib`
 
-Data is taken from [OpenForensics](https://zenodo.org/record/5528418#.ZGaehnbMKHv), which is an open-source dataset used in the paper "Multi-Face Forgery Detection And Segmentation In-The-Wild Dataset" by Le, Trung-Nghia et al. Not much cleaning was needed besides `train_test_split`.
+The committed pilot weight file currently available in this repo is:
 
-Preprocessing for modeling included image formatting to (256, 256) and scaling (done within the layers). For certain models, we also applied data augmentation (rotation, flipping, etc.), which were also included in the layers.
+- `best.pt`
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+This notebook is the first implemented step of the redesigned AI Shield image pipeline.
 
-<a name="process-work"></a>
-## Modeling / Analysis
+---
 
-A total of 11 CNNs were trained across local and Google Colab instances (roughly 35 hours). The results were aggregated and compared to then select the main models shown in this repo + presentation.
+## Repository Map
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+```text
+deepfake-image-detector/
+|-- app.py
+|-- streamlit_app.py
+|-- best.pt
+|-- README.md
+|-- DEPLOYMENT.md
+|-- mini_capstone_authenticity_report.tex
+|-- mini_capstone_part1 (1).tex
+|-- phase1_tiny_genimage_effnet_vae (3).ipynb
+|-- code/
+|   |-- PretrainedModel/
+|   |   |-- dffnetv2B0.zip
+|   |   `-- streamlit_deepfake_detector/
+|   |-- main/
+|   |   |-- Training/
+|   |   `-- Testing/
+|   `-- results/
+|-- repo/
+|   |-- assets/
+|   `-- screenshots/
+`-- requirements.txt
+```
 
-<!-- CONCLUSIONS -->
-<a name="results"></a>
-# Results
+---
 
-<a name="results-screen"></a>
-### Selected Screenshots
-<img src="repo\screenshots\v2b0_history.png">
-<img src="repo\screenshots\loss_acc.png">
-<img src="repo\screenshots\precision_recall.png">
+## Reports And Capstone Documentation
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+This repo also contains the current written project materials:
 
-<a name="results-conclusion"></a>
-### Conclusion
+- [`end_to_end_deepfake_report.tex`](end_to_end_deepfake_report.tex)
+- [`mini_capstone_authenticity_report.tex`](mini_capstone_authenticity_report.tex)
+- [`mini_capstone_part1 (1).tex`](mini_capstone_part1%20(1).tex)
 
-Based on our findings, we recommend using our `EfficientNet_v2B0` model, which is our best model. This out-of-the-box solution would provide the highest scores of validation accuracy of 0.965 and validation precision of 0.992.
+These documents explain:
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+- the first OpenForensics detector
+- the failure cases that changed the project
+- the Tiny-GenImage pilot
+- the four-phase AI Shield direction
 
-<a name="results-uncertain"></a>
-### Uncertainties
+---
 
-Training data did not include further alterations besides the deepfake (eg. the training data set did not include color tints, high contrast, blurred, etc. images), while the testing data did. Thus, we can achieve a higher accuracy with our models by including that in our data augmentation. Likewise, increased time horizons and stronger compute can lead to more complex models.
+## Limitations
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+Current limitations are important and intentional to state clearly:
 
-<!-- CONTACT -->
-<a name="contact"></a>
-# Contact
+- The deployed app is still tied to the OpenForensics model, which is face-centered.
+- `best.pt` is committed, but it is not yet integrated into the app.
+- The Tiny-GenImage run is a pilot subset, not a full-scale final training run.
+- The broader AI Shield pipeline is partially implemented, not finished.
+- The video branch is still a planned extension.
 
-If you wish to contact me, Christopher Denq, please reach out via [LinkedIn](https://www.linkedin.com/in/christopherdenq/).
+---
 
-If you're curious about more projects, check out my [website](https://cdenq.github.io/) or [GitHub](https://github.com/cdenq).
+## Next Steps
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+Planned near-term work:
+
+1. Move the Tiny-GenImage pilot artifacts into a cleaner model directory structure.
+2. Add the next image-phase components:
+   - variational autoencoder for anomaly-sensitive forensics
+   - semantic consistency checks
+   - context and provenance layers
+3. Decide how the experimental `best.pt` model should be evaluated against the deployed OpenForensics baseline.
+4. Extend the image-first system toward video once the image stack is stable.
+
+---
+
+## Tech Stack
+
+- Python
+- Streamlit
+- TensorFlow / Keras
+- PyTorch
+- timm
+- Hugging Face Datasets
+- NumPy
+- Pandas
+- Pillow
+
+---
+
+## Notes For Contributors
+
+If you are opening this repo fresh, the safest mental model is:
+
+- Use the Streamlit app for the deployed first model
+- Use the Tiny-GenImage notebook for the experimental second track
+- Do not assume both models currently share the same inference pipeline
+
+That separation is real and reflects the actual stage of the project.
