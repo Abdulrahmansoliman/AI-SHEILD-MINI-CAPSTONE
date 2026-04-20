@@ -12,23 +12,33 @@
 \usepackage{xcolor}
 \usepackage{tikz}
 \usepackage{pgfplots}
-\usepackage{amsmath}
+\usepackage{amsmath,amssymb}
 \usepackage{parskip}
 \usepackage{tabularx}
 \usepackage{float}
 \usepackage{caption}
+\usepackage{subcaption}
 \usepackage{titlesec}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{placeins}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{ragged2e}
+\usepackage{etoolbox}
 
-\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc,fit}
 \pgfplotsset{compat=1.18}
 \hypersetup{
     colorlinks=true,
     linkcolor=blue!55!black,
     urlcolor=blue!55!black,
     citecolor=blue!55!black,
-    pdftitle={From Deepfake Detector to AI Shield - Part I},
+    pdftitle={AI Shield: Toward Trustworthy Detection of AI-Generated and AI-Manipulated Media},
     pdfauthor={Abdelrahman Mohamed}
 }
+\graphicspath{{repo/screenshots/}{repo/assets/}{./}}
+\urlstyle{same}
 
 \definecolor{navy}{HTML}{123B5D}
 \definecolor{gold}{HTML}{C28C2D}
@@ -40,8 +50,16 @@
 
 \titleformat{\section}{\Large\bfseries\color{navy}}{}{0em}{}
 \titleformat{\subsection}{\large\bfseries\color{navy}}{}{0em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{navy}}{}{0em}{}
 \setcounter{tocdepth}{2}
 \captionsetup{font=small,labelfont=bf}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{navy}{AI Shield}}
+\fancyhead[R]{\textcolor{navy}{Mini-Capstone Final Report}}
+\fancyfoot[C]{\thepage\ of \pageref{LastPage}}
+\setlength{\headheight}{14pt}
 
 \newcommand{\callout}[2]{%
 \begin{center}
@@ -57,7 +75,7 @@
 
 \newcommand{\summarycard}[3]{%
 \fcolorbox{navy}{#1}{%
-\parbox[c][3.4cm][t]{0.94\linewidth}{%
+\parbox[t]{0.94\linewidth}{%
 \raggedright
 \textbf{#2}\par\vspace{0.35em}
 \small #3
@@ -66,10 +84,10 @@
 
 \newcommand{\metriccard}[3]{%
 \fcolorbox{navy}{#1}{%
-\parbox[c][2.2cm][c]{0.92\linewidth}{%
+\parbox[c][2.1cm][c]{0.92\linewidth}{%
 \centering
 \textbf{#2}\par
-\vspace{0.25em}
+\vspace{0.2em}
 {\Large\bfseries #3}
 }}
 }
@@ -79,61 +97,61 @@
 \begin{titlepage}
     \centering
     \vspace*{1.0cm}
-    {\large\color{navy}\textbf{Mini-Capstone Report}\par}
-    \vspace{0.45cm}
-    {\Huge\bfseries\color{navy} From Deepfake Detector to AI Shield\par}
-    \vspace{0.3cm}
-    {\Large Part I: Executive Summary and Academic Abstract\par}
-    \vspace{0.8cm}
-    {\large Abdelrahman Mohamed\par}
-    \vspace{0.2cm}
+    {\large\color{navy}\textbf{CP192 Mini-Capstone Final Report}\par}
+    \vspace{0.55cm}
+    {\Huge\bfseries\color{navy} AI Shield\par}
+    \vspace{0.18cm}
+    {\Large Toward Trustworthy Detection of AI-Generated and AI-Manipulated Media\par}
+    \vspace{0.75cm}
+    {\Large Final Combined Submission\par}
+    \vspace{0.35cm}
     {\normalsize April 2026\par}
 
-    \vspace{1.0cm}
+    \vspace{0.9cm}
     \fcolorbox{navy}{softblue}{%
-    \parbox{0.88\linewidth}{%
+    \parbox{0.9\linewidth}{%
     \centering
-    \textbf{Project focus.} My broader capstone goal is a detector for AI-generated and AI-manipulated media. This part presents the first completed image-focused detector, the hard cases that exposed its limits, and the redesigned four-phase image pipeline that will later extend to video.
+    \textbf{Project focus.} This report documents the full mini-capstone from end to end: the first OpenForensics-based forensic detector, the hard cases that exposed its limits, the redesigned four-phase AI Shield architecture, the first Tiny-GenImage pilot of the new image pipeline, and the process evidence that explains how and why the project changed.
     }}
 
-    \vspace{1.0cm}
+    \vspace{0.75cm}
     \begin{center}
     \begin{minipage}[t]{0.29\textwidth}
     \centering
-    \metriccard{softblue}{Validation Accuracy}{0.9651}
+    \metriccard{softblue}{OpenForensics\\Val. Accuracy}{0.9651}
     \end{minipage}\hfill
     \begin{minipage}[t]{0.29\textwidth}
     \centering
-    \metriccard{softgreen}{Validation Precision}{0.9919}
+    \metriccard{softred}{Held-out Test\\Accuracy}{0.8577}
     \end{minipage}\hfill
     \begin{minipage}[t]{0.29\textwidth}
     \centering
-    \metriccard{softred}{Test Accuracy}{0.8577}
+    \metriccard{softyellow}{Tiny-GenImage Pilot\\Val. AUC}{0.8503}
     \end{minipage}
     \end{center}
 
     \vspace{0.9cm}
     \begin{tikzpicture}[
-        scale=0.78,
+        scale=0.92,
         transform shape,
-        node distance=0.55cm and 0.35cm,
-        box/.style={draw=navy, rounded corners=3pt, minimum width=2.55cm, minimum height=1.08cm, align=center},
-        arrow/.style={-{Latex[length=2.4mm]}, thick, draw=navy}
+        node distance=0.45cm and 0.30cm,
+        box/.style={draw=navy, rounded corners=3pt, minimum width=2.55cm, minimum height=1.05cm, align=center},
+        arrow/.style={-{Latex[length=2.3mm]}, thick, draw=navy}
     ]
-    \node[box, fill=softblue] (a) {Iteration 1\\OpenForensics detector};
-    \node[box, right=of a, fill=softred] (b) {Hard cases\\Gandhi, Photoshop, AI edits};
-    \node[box, right=of b, fill=softyellow] (c) {New image pipeline\\4 phases};
-    \node[box, right=of c, fill=softgreen] (d) {Long-term capstone\\image + video AI Shield};
+    \node[box, fill=softblue] (a) {Iteration 1\\OpenForensics\\face detector};
+    \node[box, right=of a, fill=softred] (b) {Hard-case\\stress testing};
+    \node[box, right=of b, fill=softyellow] (c) {Tiny-GenImage\\pilot};
+    \node[box, right=of c, fill=softgreen] (d) {Four-phase\\AI Shield};
     \draw[arrow] (a) -- (b);
     \draw[arrow] (b) -- (c);
     \draw[arrow] (c) -- (d);
     \end{tikzpicture}
 
-    \vfill
+    \vspace{0.9cm}
     \fcolorbox{navy}{softgray}{%
-    \parbox{0.86\linewidth}{%
+    \parbox{0.88\linewidth}{%
     \centering
-    \textbf{Document contents.} This file contains a one-page executive summary for a general audience and a technical abstract for readers with more ML background.
+    \textbf{Document structure.} Part I presents the executive summary and academic abstract, Part II presents the technical work product, and Part III presents the process documentation, selected HC/LO applications, and timeline.
     }}
 \end{titlepage}
 
@@ -143,49 +161,447 @@
 \clearpage
 \pagenumbering{arabic}
 
-\section*{Part 1: Executive Summary and Academic Abstract}
-\addcontentsline{toc}{section}{Part 1: Executive Summary and Academic Abstract}
+% -------------------------------------------------
+\section*{Part I: Executive Summary and Academic Abstract}
+\addcontentsline{toc}{section}{Part I: Executive Summary and Academic Abstract}
 
 \subsection*{Executive Summary}
 \addcontentsline{toc}{subsection}{Executive Summary}
 
-\noindent\textbf{One-sentence takeaway.} I built a real deepfake detector that worked well on a benchmark of real and fake \emph{face images}, but hard cases showed me that this first detector covered only one part of the bigger authenticity problem.
+\noindent\textbf{One-sentence takeaway.} I built a real image-level deepfake detector that performed strongly on benchmark data, but hard cases such as Gandhi taking a selfie, Photoshop-style portrait edits, and AI-edited people images showed me that pixel-level detection is not the same as authenticity.
 
-\vspace{0.45em}
+\vspace{0.5em}
 
 \begin{center}
-\begin{minipage}[t]{0.345\textwidth}
+\begin{minipage}[t]{0.35\textwidth}
 \centering
 \summarycard{softblue}{What I already built}{
-I trained, compared, and deployed a working image-level detector on the OpenForensics benchmark. The strongest preserved model was \textbf{EfficientNetV2-B0}, selected after comparing several CNN candidates and shipped as a usable app.
+I trained, compared, and deployed a working image-level detector on the OpenForensics benchmark. The strongest preserved model was \textbf{EfficientNetV2-B0}, selected after comparing several CNN candidates and packaged as a usable Streamlit app.
 }
 \end{minipage}\hfill
-\begin{minipage}[t]{0.33\textwidth}
+\begin{minipage}[t]{0.29\textwidth}
 \centering
 \summarycard{softred}{What changed the project}{
-The turning point was a pattern of hard cases: Gandhi taking a selfie, Photoshop-style portrait edits, and AI-edited people images that looked plausible enough to expose the difference between realism and authenticity.
+The turning point was a growing pattern of hard cases. Gandhi taking a selfie became the clearest one, but Photoshop-like portrait edits and AI-edited people images also showed that realism and authenticity are different problems.
 }
 \end{minipage}\hfill
 \begin{minipage}[t]{0.32\textwidth}
 \centering
 \summarycard{softgreen}{What comes next}{
-My next iteration is an \textbf{AI Shield}: a four-phase system that starts with image evidence and later extends to video. I have already started the first new-pipeline pilot on Tiny-GenImage in Google Colab.
+My next iteration is an \textbf{AI Shield}: a layered system that begins with images and later extends to video. I have already started the first Colab-based pilot of the redesigned image pipeline on Tiny-GenImage.
 }
 \end{minipage}
 \end{center}
 
-My larger capstone goal is to build a detector for \textbf{AI-generated and AI-manipulated images and videos}. I started with images first because that was the most practical way to build one strong layer, deploy it, and learn from its limits before adding video and more complex evidence.
+My larger capstone goal is to build a detector for \textbf{AI-generated and AI-manipulated images and videos}. I started with images first because that was the most practical way to build a strong first layer, deploy it, and study its limits before adding video and more complex evidence.
 
-The first detector itself was meaningful. The best preserved model was an \textbf{EfficientNetV2-B0} classifier trained on OpenForensics. In the saved experiment artifacts, it reached \textbf{0.9651 validation accuracy}, \textbf{0.9919 validation precision}, and \textbf{0.9824 validation AUC}. On a harder held-out test set, the score dropped to \textbf{0.8577 accuracy}. That already suggested that benchmark success does not automatically mean a detector is trustworthy once the conditions become messier.
+The first detector worked well on its benchmark. The best preserved model was an \textbf{EfficientNetV2-B0} classifier trained on OpenForensics. In the saved experiment artifacts, it reached \textbf{0.9651 validation accuracy}, \textbf{0.9919 validation precision}, and \textbf{0.9824 validation AUC}. On a harder held-out test set, the score dropped to \textbf{0.8577 accuracy}. That already suggested that benchmark success does not automatically mean a detector is trustworthy once the conditions become messier.
 
-But OpenForensics mainly gave me \textbf{real and fake face images}. That was a strong place to start, because it let me build a serious first image detector. At the same time, it did \textbf{not} cover the full pipeline I ultimately care about: broader AI-generated images, Photoshop-style edits outside narrow face-forgery settings, AI-edited photographs, claim-based authenticity, provenance, and later video. That gap is one of the main reasons the project changed.
+The project changed because the original OpenForensics setup mainly covered \textbf{real and fake face images}. That was a strong first benchmark, but it was too narrow for the full capstone pipeline I actually want. It did not cover enough non-face images, Photoshop-style edits, AI-edited object scenes, or later video cases. That is why the data changed along with the pipeline.
 
 \begin{center}
 \begin{tikzpicture}[
     scale=0.82,
     transform shape,
-    node distance=0.5cm and 0.25cm,
-    box/.style={draw=navy, rounded corners=3pt, minimum width=2.1cm, minimum height=0.95cm, align=center},
+    node distance=0.45cm and 0.25cm,
+    box/.style={draw=navy, rounded corners=3pt, minimum width=2.15cm, minimum height=0.95cm, align=center},
+    arrow/.style={-{Latex[length=2.2mm]}, thick, draw=navy}
+]
+\node[box, fill=softblue] (f1) {Layer 1\\Low-level forensics};
+\node[box, right=of f1, fill=softgreen] (f2) {Layer 2\\Semantic consistency};
+\node[box, right=of f2, fill=softyellow] (f3) {Layer 3\\Context verification};
+\node[box, right=of f3, fill=softgray] (f4) {Layer 4\\Provenance};
+\node[box, right=of f4, fill=softred] (f5) {Later extension\\Video branch};
+\draw[arrow] (f1) -- (f2);
+\draw[arrow] (f2) -- (f3);
+\draw[arrow] (f3) -- (f4);
+\draw[arrow] (f4) -- (f5);
+\end{tikzpicture}
+
+\small\textbf{Figure 1.} The redesigned AI Shield pipeline starts with image forensics, then adds semantic, context, and provenance layers before extending to video.
+\end{center}
+
+To start that redesign, I switched to a broader image dataset and created a first pilot in Google Colab. In the new notebook, I mounted Google Drive, downloaded \textbf{Tiny-GenImage} from Hugging Face, created a balanced pilot subset, and trained the first \textbf{EfficientNet-B0} model in the new workflow. I limited that run to \textbf{4,000 training images} and \textbf{1,000 validation images} to make the first iteration of the new pipeline realistic under time and storage constraints.
+
+That first pilot already produced a usable baseline. After \textbf{8 epochs}, the run reached a final \textbf{training loss of 0.0327}, \textbf{validation accuracy of 0.7710}, and \textbf{validation AUC of 0.8503}. Those numbers are lower than the older OpenForensics benchmark, but they come from a broader and more realistic image setup rather than a narrower face-forensics benchmark.
+
+The main data strategy is now much clearer:
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{OpenForensics} remains useful for the original face-forensics stage and for later semantic consistency work on faces.
+    \item \textbf{Tiny-GenImage} gives the redesigned image pipeline broader coverage of AI-generated general images rather than only face cases.
+    \item \textbf{Later additions} will need edited-image and video benchmarks so the shield can cover more of the real problem.
+\end{itemize}
+
+\callout{Why this matters for a general audience}{
+The real value of the project is not only that I trained a detector. The value is that I built one, deployed it, tested it on hard cases, and used those failures to define a stronger long-term capstone about trustworthy image and video detection.
+}
+
+\subsection*{Academic Abstract}
+\addcontentsline{toc}{subsection}{Academic Abstract}
+
+This mini-capstone documents the first completed iteration of a broader capstone whose long-term goal is an AI-generated media detector for both \textbf{images and video}. I began with the image branch and built a deployable AI-generated image detector using OpenForensics and transfer learning with \textbf{EfficientNetV2-B0}. The preserved pipeline standardized RGB loading, resizing to \textbf{256\(\times\)256}, normalization, augmentation, and thresholded sigmoid-based inference. Across the saved model comparisons, EfficientNetV2-B0 was the strongest preserved baseline, achieving \textbf{0.9651 validation accuracy}, \textbf{0.9919 validation precision}, and \textbf{0.9824 validation AUC}; on a harder held-out test set, performance dropped to \textbf{0.8577 accuracy}, indicating sensitivity to distribution shift and post-processing.
+
+The most important outcome of the project was not only the deployed detector, but the limitation revealed through qualitative stress testing. A historically impossible but visually plausible image of Mahatma Gandhi taking a selfie, together with Photoshop-style portrait edits and AI-edited people images, showed that image-level detection and authenticity assessment are not equivalent tasks. I therefore redesigned the next stage as a layered AI Shield architecture combining low-level forensic modeling, semantic consistency analysis, contextual claim verification, provenance analysis, and later video extension. I also completed the first training pilot of the new image pipeline in Google Colab on a balanced Tiny-GenImage subset of \textbf{4,000} training images and \textbf{1,000} validation images; after \textbf{8 epochs}, that pilot reached a final \textbf{training loss of 0.0327}, \textbf{validation accuracy of 0.7710}, and \textbf{validation AUC of 0.8503}. The current work therefore establishes both a finished first detector and a concrete second-iteration image pipeline.
+
+% -------------------------------------------------
+\clearpage
+\section*{Part II: Capstone Work Product}
+\addcontentsline{toc}{section}{Part II: Capstone Work Product}
+
+\section{Work Product Overview and Audience}
+
+The work product for this mini-capstone is a \textbf{technical prototype report} for a machine-learning audience. I wrote it as if the reader were a technically literate professor, engineer, or advanced student who wants to understand exactly what I built, what I measured, why the first system was not enough, and how the next system is being designed from the evidence I already produced.
+
+The work product has two linked contributions. First, it documents a completed and deployed \textbf{OpenForensics-based image-level detector} built around transfer learning and model selection. Second, it documents the \textbf{redesigned pipeline} that emerged after I stress-tested the first detector on cases that are visually plausible but authenticity-wise much harder. The result is not just ``a classifier''; it is a technical argument for why authenticity assessment should be layered.
+
+\callout{Narrow work product vs. broader process documentation}{
+This section stays focused on the technical work product itself: what I built, the evidence supporting it, the limits I observed, and the next system design it motivated. The broader reflection on process, HC/LO application, and navigation appears later in Part III.
+}
+
+\section{Public Artifacts and Deliverables}
+
+The public-facing artifacts associated with this project are listed below. These links are part of the work product because they make the project inspectable beyond the PDF itself.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{0.98\textwidth}{>{\raggedright\arraybackslash}p{2.4cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{3.0cm}}
+\toprule
+\textbf{Artifact} & \textbf{Description} & \textbf{Link / note} \\
+\midrule
+Original repository & Earlier repository from the first, narrower OpenForensics-based direction of the project. & \href{https://github.com/Abdulrahmansoliman/ai-shield}{ai-shield} \\
+Redesigned repository & Current repository for the new pipeline and pilot experiments. & \href{https://github.com/Abdulrahmansoliman/AI-SHEILD-MINI-CAPSTONE}{AI-SHEILD-MINI-CAPSTONE} \\
+Deployed app & Streamlit deployment of the first forensic pipeline. In practice, the app may go idle if it has not been visited recently; when that happens, it can usually be restored by pressing \emph{Get this app back up}. & \href{https://ai-sheild-mini-capstone-pw2je37vtmqkydkyb3ae8f.streamlit.app/}{Streamlit app} \\
+Presentation slides & Slide deck used in the associated presentation and iteration narrative. & \href{https://docs.google.com/presentation/d/1khocynV_Mvl0LBF9GB6kxojg8uE0ey2k1qvOWHNN4Wk/edit?slide=id.p11\#slide=id.p11}{Google Slides deck} \\
+\bottomrule
+\end{tabularx}
+\caption{Public artifacts connected to the mini-capstone.}
+\end{table}
+
+\section{Problem Statement and System Goal}
+
+My larger capstone goal is an \textbf{AI-generated media detector} for both images and video. The practical constraint is that I could not build a fully general image-and-video system all at once while also keeping the work honest and reproducible. I therefore started with the image branch and asked a narrower technical question:
+
+\begin{quote}
+Can I build, compare, evaluate, and deploy a strong image-level detector for manipulated or AI-generated media under realistic conditions?
+\end{quote}
+
+The reason that question matters is that many detectors work well on clean benchmark data but are less convincing when the input is compressed, resized, reposted, edited again, or simply out of the data distribution they were trained on. In other words, benchmark accuracy is not the same thing as trustworthiness in the wild.
+
+At a high level, the final system I want is an \textbf{AI Shield} that can combine multiple kinds of evidence:
+\begin{enumerate}[leftmargin=1.5em]
+    \item low-level forensic traces,
+    \item semantic consistency,
+    \item contextual verification,
+    \item provenance and source history,
+    \item and later, temporal evidence for video.
+\end{enumerate}
+
+But before I could justify that larger architecture, I needed to build one strong first layer and see where it broke.
+
+\section{Why the First Dataset Was Not Enough}
+
+The first pipeline used \textbf{OpenForensics} as its main data source. That was a reasonable starting point because OpenForensics is a serious benchmark for face-forgery detection and segmentation in the wild. It gave me a large, labeled real-vs-fake image problem with preserved train/validation/test splits and enough scale to make model comparison meaningful.
+
+At the same time, OpenForensics covers a \textbf{narrower slice of the authenticity problem} than the final capstone requires. Its practical center of gravity is still face-related real/fake imagery. That means it is strong for questions like:
+\begin{itemize}[leftmargin=1.5em]
+    \item does this face image look manipulated,
+    \item is there evidence of face-specific artifact patterns,
+    \item can a CNN separate the two classes on this benchmark.
+\end{itemize}
+
+It is much weaker for questions like:
+\begin{itemize}[leftmargin=1.5em]
+    \item what if the image is not a face image at all,
+    \item what if it is a general AI-generated object or scene,
+    \item what if it is a Photoshop-style edit rather than a benchmark face forgery,
+    \item what if it is semantically plausible in pixels but absurd in context,
+    \item what if the medium is video rather than a single image.
+\end{itemize}
+
+So OpenForensics was a strong \textbf{first benchmark}, but it did \textbf{not} cover the full pipeline I ultimately need. That is exactly why the data had to change when the pipeline changed.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{0.98\textwidth}{>{\raggedright\arraybackslash}p{2.5cm} >{\raggedright\arraybackslash}p{4.6cm} >{\raggedright\arraybackslash}X}
+\toprule
+\textbf{Data source} & \textbf{What it covers well} & \textbf{What it still misses} \\
+\midrule
+OpenForensics & Real/fake face imagery, face-forgery detection, segmentation-like supervision, benchmark comparison. & Broader non-face image coverage, general object scenes, many AI-edited non-face cases, contextual mismatch, video. \\
+Tiny-GenImage & Broader AI-generated general images and a practical first image-level pilot in Colab. & Semantic region supervision, provenance, context claims, and video. \\
+Future edited-image / video datasets & Photoshop-like edits, harder general manipulation cases, and temporal consistency. & Not yet integrated into the current pilot. \\
+\bottomrule
+\end{tabularx}
+\caption{Why the data strategy had to change as the project moved from a face-forensics detector to a broader authenticity pipeline.}
+\end{table}
+
+\section{Iteration 1: OpenForensics Detector}
+
+\subsection{Data scale and preprocessing pipeline}
+
+The first completed detector used OpenForensics repository artifacts and preserved training outputs. The working split included approximately \textbf{140,002} training images, \textbf{39,428} validation images, and about \textbf{10.9K} test images. The preprocessing pipeline standardized RGB image loading, resizing to \(256\times256\), normalization, augmentation, and batch-based training.
+
+Instead of reproducing the exact original slide screenshot that looked awkward in earlier drafts, I summarize the pipeline here as a clean workflow:
+
+\begin{center}
+\begin{tikzpicture}[
+    scale=0.9,
+    transform shape,
+    node distance=0.40cm and 0.20cm,
+    box/.style={draw=navy, rounded corners=3pt, minimum width=2.05cm, minimum height=0.95cm, align=center},
+    arrow/.style={-{Latex[length=2.1mm]}, thick, draw=navy}
+]
+\node[box, fill=softblue] (a) {Directory-based\\real / fake images};
+\node[box, right=of a, fill=softgray] (b) {Resize\\$256\times256$};
+\node[box, right=of b, fill=softyellow] (c) {Normalize\\RGB tensors};
+\node[box, right=of c, fill=softgreen] (d) {Augment\\flip + rotation};
+\node[box, right=of d, fill=softred] (e) {Train / val / test\\evaluation};
+\draw[arrow] (a) -- (b);
+\draw[arrow] (b) -- (c);
+\draw[arrow] (c) -- (d);
+\draw[arrow] (d) -- (e);
+\end{tikzpicture}
+\end{center}
+
+That pipeline matters because the first system was not just a model choice; it was a complete data and evaluation workflow.
+
+\subsection{Model family comparison and selected baseline}
+
+I did not build the first detector by choosing one architecture and hoping it would work. I compared several preserved candidates and selected the strongest baseline from the saved results. The key comparison plots from the first pipeline are shown below.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{loss_acc.png}
+    \caption{Loss and accuracy across candidate models.}
+\end{subfigure}\hfill
+\begin{subfigure}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{loss_precision.png}
+    \caption{Loss and precision across candidate models.}
+\end{subfigure}
+
+\vspace{0.8em}
+
+\begin{subfigure}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{precision_recall.png}
+    \caption{Precision and recall comparison.}
+\end{subfigure}\hfill
+\begin{subfigure}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{v2b0_history.png}
+    \caption{Training history of the chosen best model.}
+\end{subfigure}
+\caption{Preserved model-selection plots from the first pipeline. Together, these plots show why EfficientNetV2-B0 emerged as the strongest preserved baseline rather than being chosen arbitrarily.}
+\label{fig:old-model-comparison}
+\end{figure}
+
+The strongest preserved validation numbers for EfficientNetV2-B0 were:
+\begin{center}
+\begin{tabular}{lccccc}
+\toprule
+Model & Val. loss & Val. acc. & Val. precision & Val. recall & Val. AUC \\
+\midrule
+CNN benchmark & 0.4216 & 0.8216 & 0.7723 & 0.9139 & 0.9169 \\
+CNN tuned & 0.2601 & 0.9181 & 0.9142 & 0.9236 & 0.9700 \\
+EffNetV2-L & 0.2864 & 0.8912 & 0.8875 & 0.8969 & 0.9564 \\
+EffNetV2-B0 & \textbf{0.1196} & \textbf{0.9651} & \textbf{0.9919} & \textbf{0.9498} & \textbf{0.9824} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Mathematical formulation of the first classifier}
+
+The first detector is a binary classifier. Let
+\[
+x \in \mathbb{R}^{3\times256\times256}
+\]
+be an RGB image. The EfficientNet backbone maps the image to an internal representation and finally to a scalar logit
+\[
+z = f_{\theta}(x).
+\]
+The probability that the image belongs to the positive class is obtained with the sigmoid function:
+\[
+p(y=1\mid x) = \sigma(z) = \frac{1}{1+e^{-z}}.
+\]
+
+Training minimizes binary cross-entropy. For a true label \(y\in\{0,1\}\), the loss for one example is
+\[
+\mathcal{L}_{\text{BCE}}(y,p) = -\left[y\log(p) + (1-y)\log(1-p)\right].
+\]
+
+This matters conceptually because the classifier is not learning ``truth'' in the broad sense. It is learning a decision boundary between the two classes represented in the training data.
+
+\subsection{Held-out test behavior}
+
+The harder held-out test set produced the following results:
+\begin{itemize}[leftmargin=1.5em]
+    \item accuracy: \textbf{0.8577}
+    \item precision: \textbf{0.9188}
+    \item recall: \textbf{0.7828}
+    \item AUC: \textbf{0.9387}
+\end{itemize}
+
+The old testing ROC snapshot is shown below.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.46\textwidth]{v2b0_roc.png}
+\caption{Held-out ROC snapshot from the first detector. The validation-to-test drop was one of the most important empirical findings because it showed that a detector that looks strong on a cleaner split can become less convincing under harder conditions.}
+\end{figure}
+
+\subsection{Deployment}
+
+The first forensic pipeline was also deployed as a Streamlit application. This matters because the work product was not only a notebook result; it became a usable artifact that someone else could open and test. At the same time, deployment introduced a practical lesson: a working detector is still only one layer of the broader authenticity problem.
+
+\section{Hard Cases and Why the Project Shifted}
+
+The project changed most clearly when I began stress-testing the detector on cases that looked plausible but were conceptually more difficult. The image of \textbf{Mahatma Gandhi taking a selfie} became the clearest example because it is visually plausible enough to fool a naive realism detector while being historically impossible. But Gandhi was not the only important case. As I thought more seriously about the longer-term capstone, I realized that \textbf{Photoshop-style edited portraits}, \textbf{AI-edited photographs of people}, and other visually convincing edits reveal the same larger issue: image realism and authenticity are not the same thing.
+
+That shift is the reason the project moved from ``deepfake detector'' to \textbf{AI Shield}. A detector that only judges pixels may still miss cases where:
+\begin{itemize}[leftmargin=1.5em]
+    \item the content is semantically inconsistent,
+    \item the image fits the benchmark but not the claim,
+    \item the source history is weak,
+    \item or the medium is video instead of a single image.
+\end{itemize}
+
+\section{Iteration 2: Redesigned Image Pipeline Pilot}
+
+\subsection{Why Tiny-GenImage}
+
+To begin the redesign, I needed broader image data than OpenForensics. Tiny-GenImage gave me a practical way to start the new image pipeline because it contains more general real/fake image cases rather than mostly face-centered ones. I ran the new pilot in Google Colab and used Google Drive for storage and checkpoints.
+
+The first practical subset was deliberately small:
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{4,000} training images,
+    \item \textbf{1,000} validation images,
+    \item balanced real/fake sampling.
+\end{itemize}
+
+That choice was not about lowering ambition. It was about building the new pipeline in a way I could actually run, debug, checkpoint, and interpret.
+
+\subsection{New EfficientNet-B0 pilot results}
+
+The new pilot used EfficientNet-B0 as the first supervised phase-1 baseline. Over eight epochs, the validation metrics improved as follows:
+\begin{center}
+\begin{tabular}{cccc}
+\toprule
+Epoch & Train loss & Val. acc. & Val. AUC \\
+\midrule
+1 & 1.6744 & 0.6900 & 0.7510 \\
+2 & 0.4432 & 0.6990 & 0.7666 \\
+3 & 0.1989 & 0.7100 & 0.7827 \\
+4 & 0.1043 & 0.7420 & 0.8199 \\
+5 & 0.0755 & 0.7430 & 0.8316 \\
+6 & 0.0504 & 0.7420 & 0.8285 \\
+7 & 0.0366 & 0.7620 & 0.8494 \\
+8 & 0.0327 & 0.7710 & 0.8503 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The final pilot checkpoint is the current quantitative summary of the redesigned image workflow:
+\begin{itemize}[leftmargin=1.5em]
+    \item final train loss: \textbf{0.0327}
+    \item final validation accuracy: \textbf{0.7710}
+    \item final validation AUC: \textbf{0.8503}
+    \item validation precision/recall behavior was tracked during training and summarized in the saved pilot-metrics figures below
+\end{itemize}
+
+The corresponding training curves and pilot-metrics summary are shown below.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{new_pipline_training_loss.png}
+    \caption{Loss and validation trend across the 8-epoch pilot run.}
+\end{subfigure}\hfill
+\begin{subfigure}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{new_pipeline_metrics_summary.png}
+    \caption{Confusion matrix, ROC, and precision-recall summary for the pilot.}
+\end{subfigure}
+\caption{Saved outputs from the new Tiny-GenImage pilot. These figures matter because they show that the redesigned image pipeline is not only conceptual; it has already been trained, evaluated, and debugged on a balanced pilot subset.}
+\label{fig:new-pilot-history}
+\end{figure}
+
+These numbers are lower than the old OpenForensics benchmark, but they answer a different question. The new pilot is broader, earlier, and intentionally limited in data size. Its value is that it proves the new pipeline is real and trainable.
+
+\subsection{False positives and false negatives}
+
+The most informative outputs from the new pilot were not only the aggregate metrics. Looking at the mistakes helped me understand what the new baseline still struggles with.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.98\textwidth]{false_positives_gallery_new_pipeline.png}
+\caption{Top false positives from the new pilot. These are real images that the model scored as fake. They show that unusual textures, unusual objects, and some photographic conditions can still confuse the classifier.}
+\label{fig:false-pos}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.98\textwidth]{false_negatives_gallery_new_pipeline.png}
+\caption{Top false negatives from the new pilot. These are fake images that the model still scores as real. They show how convincing some generated scenes can be even in the broader dataset.}
+\label{fig:false-neg}
+\end{figure}
+
+Those mistakes matter because they make the next design step concrete. I do not just know that the pilot is imperfect; I can see some of the visual categories in which it is imperfect.
+
+\section{The New Low-Level Phase: EfficientNet + VAE}
+
+The immediate next step in the redesigned image pipeline is to expand the low-level forensic phase from a single classifier into a \textbf{two-branch module}:
+\begin{enumerate}[leftmargin=1.5em]
+    \item a supervised classifier branch,
+    \item and a variational autoencoder (VAE) anomaly branch.
+\end{enumerate}
+
+The classifier branch asks:
+\begin{quote}
+Does this image look like the real or fake classes I have already seen?
+\end{quote}
+
+The VAE branch asks a related but different question:
+\begin{quote}
+How well does this image fit the learned structure of authentic images?
+\end{quote}
+
+\subsection{VAE mathematics}
+
+A variational autoencoder contains an encoder and a decoder. The encoder maps an input image \(x\) to a latent distribution with mean \(\mu(x)\) and variance \(\sigma^2(x)\). A latent variable is sampled as
+\[
+z = \mu(x) + \sigma(x)\odot\epsilon, \qquad \epsilon \sim \mathcal{N}(0,I).
+\]
+The decoder then reconstructs the image as \(\hat{x} = g_{\phi}(z)\).
+
+The standard VAE objective combines a reconstruction term and a KL-divergence term:
+\[
+\mathcal{L}_{\text{VAE}}(x) = \underbrace{\|x-\hat{x}\|^2}_{\text{reconstruction}} + \beta\,\underbrace{D_{\mathrm{KL}}\big(q_{\theta}(z\mid x)\;\|\;\mathcal{N}(0,I)\big)}_{\text{latent regularization}}.
+\]
+
+In plain language:
+\begin{itemize}[leftmargin=1.5em]
+    \item the reconstruction term asks whether the model can rebuild the image well,
+    \item the KL term keeps the latent space smooth and structured,
+    \item and high reconstruction error can become a useful anomaly signal.
+\end{itemize}
+
+For this project, the plan is to train the VAE primarily on authentic images so that suspicious reconstructions can serve as an additional forensic signal next to the classifier probability.
+
+\section{The Four-Phase AI Shield Architecture}
+
+The broader AI Shield architecture is now much clearer than it was at the beginning of the semester.
+
+\begin{center}
+\begin{tikzpicture}[
+    scale=0.90,
+    transform shape,
+    node distance=0.42cm and 0.20cm,
+    box/.style={draw=navy, rounded corners=3pt, minimum width=2.35cm, minimum height=0.95cm, align=center},
     arrow/.style={-{Latex[length=2.2mm]}, thick, draw=navy}
 ]
 \node[box, fill=softblue] (f1) {Phase 1\\Low-level forensics};
@@ -196,51 +612,269 @@ But OpenForensics mainly gave me \textbf{real and fake face images}. That was a 
 \draw[arrow] (f2) -- (f3);
 \draw[arrow] (f3) -- (f4);
 \end{tikzpicture}
-
-\small\textbf{Figure 1.} The redesigned image pipeline now has four explicit phases. The current work already completed the first detector and started the new phase-1 pilot.
 \end{center}
 
-So the new pipeline is more explicit than the first one. It begins with \textbf{low-level forensics}, which asks whether the image carries generation or manipulation traces. Then it adds \textbf{semantic consistency}, which asks whether suspicious regions such as hands, reflections, and boundaries make sense together. After that come \textbf{context verification}, which asks whether the content fits the claim being made about it, and \textbf{provenance}, which asks whether the file has any trustworthy source history. Once this image pipeline is stable, the longer-term capstone extends the same logic to video.
+The phases answer different questions:
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Phase 1:} Are there low-level traces of generation or manipulation?
+    \item \textbf{Phase 2:} Do the important regions make visual sense together?
+    \item \textbf{Phase 3:} Does the image fit the claim being made about it?
+    \item \textbf{Phase 4:} Is there trustworthy source history for the file?
+\end{itemize}
 
-To support that broader direction, the data also had to change. The first detector depended mostly on OpenForensics, which was useful for face-focused real/fake classification. The new pipeline needs broader image coverage as well. That is why I started a new pilot on \textbf{Tiny-GenImage} in Google Colab. Tiny-GenImage gives a much wider range of real and AI-generated images than the first face-only benchmark, so it is a better first step for the redesigned phase-1 image pipeline. After that, I plan to bring in edited-image benchmarks and later video datasets so the system can gradually cover more realistic cases instead of staying inside a narrow benchmark setting.
+This is the main conceptual contribution of the mini-capstone. The work is no longer only about making one classifier stronger. It is about designing a system whose pieces answer different questions and therefore fail differently.
+
+
+\subsection{Data by phase and how the final output is calculated}
+
+The key lesson from the redesign is that no single dataset covers the full authenticity problem. The data strategy therefore has to be \textbf{phase-specific}.
 
 \begin{table}[H]
 \centering
 \small
-\begin{tabularx}{0.98\textwidth}{>{\raggedright\arraybackslash}p{2.8cm} >{\raggedright\arraybackslash}p{3.4cm} >{\raggedright\arraybackslash}X}
+\begin{tabularx}{0.98\textwidth}{>{\raggedright\arraybackslash}p{2.2cm} >{\raggedright\arraybackslash}p{3.5cm} >{\raggedright\arraybackslash}p{3.2cm} >{\raggedright\arraybackslash}X}
 \toprule
-\textbf{Main data source} & \textbf{What it covers} & \textbf{Why it matters} \\
+\textbf{Stage} & \textbf{Main data source} & \textbf{Why that data fits the stage} & \textbf{Primary output}\\
 \midrule
-OpenForensics & Real/fake face images and face-manipulation cases & Strong first benchmark for the first detector, but too narrow to represent the full capstone pipeline by itself. \\
-Tiny-GenImage & Broader real vs AI-generated images & First practical pilot for the redesigned phase-1 image pipeline in Colab. \\
-Later edited-image and video benchmarks & Photoshop-style edits, AI-edited images, and video-specific cases & Needed to move from a narrow image benchmark toward a broader authenticity system. \\
+Initial forensic benchmark & OpenForensics & Real/fake face images were enough to build and validate the first deployed detector, but not enough to represent the broader authenticity problem. & OpenForensics-based real/fake score and benchmark comparison.\\
+Phase 1 redesign & Tiny-GenImage & Broader real/fake image coverage for general scenes and non-face content; better match for a general image-level forensic pilot. & EfficientNet score plus, next, a VAE anomaly score.\\
+Phase 2 semantic layer & OpenForensics face manipulations + planned edited-image cases & Useful when the goal is to focus on suspicious regions, boundaries, hand-like structures, and internal consistency rather than only global class labels. & Semantic inconsistency score and attention / heatmap output.\\
+Phase 3 context layer & Curated claim-image examples and later claim-linked datasets & Needed because some images are visually plausible but contextually absurd; this stage compares image content against a claim. & Claim-consistency score.\\
+Phase 4 provenance layer & Uploaded-file metadata, software/export tags, and source-history evidence when present & Needed because file history is a different type of evidence from pixels. & Provenance trust score.\\
+Later video extension & Video benchmarks once the image stack is stable & Needed to capture temporal cues that still images cannot provide. & Video-level risk score.\\
 \bottomrule
 \end{tabularx}
-\caption{Why the project needed new data as well as a new pipeline.}
+\caption{Why the final system needs multiple datasets rather than one benchmark.}
 \end{table}
 
-\callout{Why this matters for a general audience}{
-The real value of the project is not only that I trained a detector. The value is that I built one, deployed it, tested it on hard cases, saw exactly where it stopped being enough, and used that evidence to design a stronger long-term AI Shield.
-}
+The four phases are best understood as a \textbf{fused evidence pipeline}, not as four isolated models that never talk to each other. In the current design:
+\begin{itemize}[leftmargin=1.5em]
+    \item the low-level forensic phase produces a classifier score \(p_{\mathrm{cls}}\) and, after the VAE is added, an anomaly score \(a_{\mathrm{vae}}\),
+    \item the semantic phase produces a semantic inconsistency score \(s_{\mathrm{sem}}\) together with an attention map,
+    \item the context phase produces a claim-consistency score \(s_{\mathrm{ctx}}\),
+    \item and the provenance phase produces a provenance trust score \(s_{\mathrm{prov}}\).
+\end{itemize}
 
-\noindent\textbf{What I want someone to remember after one page:}
+The low-level forensic score itself is already two-branch in the redesigned pipeline:
+\[
+s_{\mathrm{forensic}}(x) = \alpha\, p_{\mathrm{cls}}(x) + (1-\alpha)\, a_{\mathrm{vae}}(x),
+\]
+where \(\alpha\in[0,1]\) controls how much weight is given to the supervised classifier versus the anomaly detector.
+
+The final AI Shield output is then a weighted fusion of the phase scores:
+\[
+S(x,c,m) = w_1 s_{\mathrm{forensic}}(x) + w_2 s_{\mathrm{sem}}(x) + w_3 s_{\mathrm{ctx}}(x,c) + w_4 s_{\mathrm{prov}}(x,m),
+\]
+with \(w_1+w_2+w_3+w_4=1\). Here \(c\) denotes an optional claim or caption and \(m\) denotes optional metadata / provenance evidence.
+
+In practice, the system does not have to force a binary answer for every input. A simple deployment policy is:
+\[
+\text{fake/manipulated if } S\ge \tau_H, \qquad
+\text{real if } S\le \tau_L, \qquad
+\text{uncertain otherwise},
+\]
+where \(\tau_H > \tau_L\). The purpose of the later phases is therefore not to overwrite the first detector, but to add new evidence when the image-only signal is not enough.
+
+\section{Current Work Product Status}
+
+The work product is honest about what is complete and what is still in progress.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{0.98\textwidth}{>{\raggedright\arraybackslash}p{4.1cm} >{\centering\arraybackslash}p{2.0cm} >{\raggedright\arraybackslash}X}
+\toprule
+\textbf{Component} & \textbf{Status} & \textbf{Meaning} \\
+\midrule
+OpenForensics detector & Completed & Trained, selected, evaluated, and deployed first image-level detector. \\
+Hard-case stress testing & Completed & Produced the evidence that forced a broader redesign. \\
+Tiny-GenImage pilot & Completed & First operational training run of the new image pipeline. \\
+EfficientNet-B0 pilot baseline & Completed & New broader image baseline with validation AUC of 0.8503 on the balanced pilot subset. \\
+VAE anomaly branch & In progress / designed & Mathematical formulation and pipeline role are clear, but full training and analysis remain next-step work. \\
+Semantic consistency layer & Designed & Planned as the next major extension after the low-level phase becomes two-branch. \\
+Context and provenance layers & Designed & Conceptually defined, not yet implemented. \\
+Video extension & Future work & Intentionally deferred until the image stack is stronger. \\
+\bottomrule
+\end{tabularx}
+\caption{What the work product includes now, and what remains as future work.}
+\end{table}
+
+% -------------------------------------------------
+\clearpage
+\section*{Part III: Capstone Process Documentation}
+\addcontentsline{toc}{section}{Part III: Capstone Process Documentation}
+
+
+\section{Overview}
+
+This process documentation is the part of the report that explains \emph{why} the project changed and \emph{how} the work was actually produced. I do not want the reader to see only a finished detector and assume the process was linear. It was not. The mini-capstone moved through two distinct repositories, one deployed app, one presentation deck, and then a new training notebook and dataset strategy. That artifact trail is one of the strongest parts of the project because it makes the pivot visible rather than merely asserted.
+
+The clearest process evidence is:
+\begin{itemize}[leftmargin=1.5em]
+    \item the original repository (\href{https://github.com/Abdulrahmansoliman/ai-shield}{ai-shield}), which captures the first OpenForensics-centered formulation of the problem,
+    \item the redesigned repository (\href{https://github.com/Abdulrahmansoliman/AI-SHEILD-MINI-CAPSTONE}{AI-SHEILD-MINI-CAPSTONE}), which documents the new Colab-based phase-1 pipeline,
+    \item the deployed Streamlit app, which preserves the first forensic detector as a usable artifact,
+    \item and the presentation deck, which shows how I explained the project publicly while the scope was still evolving.
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{0.98\textwidth}{>{\raggedright\arraybackslash}p{3.2cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{3.4cm}}
+\toprule
+\textbf{Artifact} & \textbf{What it documents} & \textbf{Why it matters in the process story}\\
+\midrule
+Original repo & The first OpenForensics-based detector, earlier assumptions about the data, and the initial deployment logic. & Shows what the project looked like before I realized the benchmark/data mismatch.\\
+Redesigned repo & The new notebook-driven image pipeline, Tiny-GenImage setup, checkpoints, and broader AI Shield direction. & Shows the project after the scope correction and data reset.\\
+Streamlit app & A live version of the first forensic detector. The app can go idle if it has not been visited recently; when that happens, it can usually be restored by pressing \emph{Get this app back up}. & Demonstrates that the first system was actually deployed, not only described.\\
+Slide deck & The public presentation version of the project. & Captures how my framing evolved while the capstone was becoming broader and more honest.\\
+\bottomrule
+\end{tabularx}
+\caption{Process evidence from the repositories and public artifacts.}
+\end{table}
+
+\section{Modeling Professional Process}
+
+The most professional thing I did in this project was \textbf{not} to promise the whole final system too early. The process that ended up working was more realistic:
 \begin{enumerate}[leftmargin=1.5em]
-    \item I already built a real deepfake detector and tested it seriously.
-    \item That first detector was based mainly on real and fake face images, so it was a strong first step but not the full capstone pipeline.
-    \item Hard cases, including Gandhi, Photoshop-style edits, and AI-edited portraits, showed me why the project needed both broader data and a new four-phase design.
-    \item I have already started the first model of the redesigned image pipeline in Google Colab on Tiny-GenImage, and the long-term goal remains an image-and-video AI Shield.
+    \item scope a manageable first detector,
+    \item train and compare models on a real benchmark,
+    \item deploy something usable,
+    \item stress-test it on cases that matter,
+    \item and then let the failures redefine the next architecture.
 \end{enumerate}
 
-\clearpage
-\subsection*{Academic Abstract}
-\addcontentsline{toc}{subsection}{Academic Abstract}
+That sequence is reflected directly in the artifact trail. The older repository captures the first formulation of the project as a deployed OpenForensics-based detector. The newer repository captures the next formulation: a Colab workflow, a broader image dataset, and the beginning of a phase-1 module that is no longer only ``one more classifier.'' The point is not that the first repository was wrong. The point is that it documented the first version of the problem well enough that I could see where it stopped being enough.
 
-This mini-capstone documents the first completed iteration of a broader capstone whose long-term goal is an AI-generated media detector for both \textbf{images and video}. I began with the image branch and built a deployable detector using OpenForensics and transfer learning with \textbf{EfficientNetV2-B0} \cite{le2021openforensics,tan2021efficientnetv2}. The preserved pipeline standardized RGB loading, resizing to \textbf{256$\times$256}, normalization, augmentation, and thresholded sigmoid-based inference. Across the saved model comparisons, EfficientNetV2-B0 was the strongest preserved baseline, achieving \textbf{0.9651 validation accuracy}, \textbf{0.9919 validation precision}, and \textbf{0.9824 validation AUC}; on a harder held-out test set, performance dropped to \textbf{0.8577 accuracy}, indicating sensitivity to distribution shift and post-processing.
+A second professional-process lesson was that dataset choice is part of model design. OpenForensics was good enough to complete a serious first detector, but it was mainly a real/fake \emph{face-image} benchmark. Once I decided the real capstone question was broader than face forensics, the data strategy had to change too. The move to Tiny-GenImage was therefore not a random dataset swap; it was a correction in problem definition.
 
-A central lesson of this first iteration is that the original dataset and pipeline were too narrow for the broader authenticity problem. OpenForensics mainly provided real and fake face images, which made it a strong first benchmark but did not cover the wider range of AI-generated images, Photoshop-style edits, AI-edited photos, provenance signals, and video cases needed for the long-term capstone. This motivated a redesigned four-phase image pipeline: low-level forensic modeling, semantic consistency analysis, contextual claim verification, and provenance analysis. I have already started that redesign by training the first new-pipeline pilot in \textbf{Google Colab} on \textbf{Tiny-GenImage}, using a balanced subset of \textbf{4,000} training images and \textbf{1,000} validation images as a practical first run. The next methodological steps are a \textbf{variational autoencoder} for anomaly-sensitive forensic modeling \cite{kingma2014vae}, an \textbf{attention-based} semantic layer \cite{vaswani2017attention}, and later multimodal reasoning and video extension.
+\section{Use of Generative AI}
 
-\section*{Selected References for Part I}
-\addcontentsline{toc}{section}{Selected References for Part I}
+Generative AI was part of the process, but not as a substitute for experimentation or evidence. I used it in three main ways. First, I used it to clarify model ideas while I was deciding how to redesign the project: for example, how a variational autoencoder would complement a supervised classifier, or how an attention-based semantic layer would differ from a forensic classifier. Second, I used it to reason through practical decisions such as dataset choice, Colab workflow, checkpointing, and how to stage the new pipeline so that I would not get stuck in archive downloads or over-scoped plans. Third, I used it to improve the writing by helping me distinguish what belongs in the executive summary, what belongs in the technical work product, and what belongs in process documentation.
+
+The important boundary is that I did \textbf{not} use AI as a source of unverified experimental evidence. Whenever AI suggested an interpretation, I checked it against the actual artifacts: the old benchmark plots, the new training curves, the confusion matrix, the false positives and false negatives, the repository state, and the deployed app. In other words, AI helped me think and communicate more clearly, but the evidence in the report still comes from the work I actually ran.
+
+\section{Strategies for \#navigation}
+
+The most important navigation move was recognizing that ``image authenticity'' and ``face-forensics benchmark performance'' are not the same problem. At the beginning, that distinction was easy to blur because the first detector looked strong on saved OpenForensics metrics. The navigation problem was not simply logistical. It was epistemic: I had to decide whether the first detector really answered the problem I cared about, or whether it only answered the problem the benchmark made easiest.
+
+The Gandhi case, Photoshop-style edits, and AI-edited portrait cases mattered because they made that navigation question concrete. They turned an abstract worry into evidence. After that, the project became easier to navigate, because I could decompose the new system into phases instead of trying to jump straight to a complete image-and-video platform.
+
+A second navigation move was practical rather than conceptual. When the broader GenImage archives turned out to be too large and awkward for the pace of this mini-capstone, I did not keep forcing the data plan out of stubbornness. I used Tiny-GenImage as a deliberate pilot dataset instead. That is an example of good navigation: changing the route without abandoning the destination.
+
+\section{Challenges and How I Responded}
+
+\subsection{Challenge 1: The original benchmark was too narrow}
+The first detector was strong, but the benchmark mainly covered real/fake face imagery. That meant I had evidence that I could build a real detector, but not yet evidence that I had the right detector for the broader capstone. I responded by reframing the project and changing the data strategy instead of pretending the old benchmark already solved the larger problem.
+
+\subsection{Challenge 2: Data volume and infrastructure friction}
+The project repeatedly ran into practical problems that were not glamorous but were very real: large datasets, archive structure, Colab runtime resets, Drive mounting, and the need to checkpoint experiments so I would not lose progress. I responded by using balanced pilot subsets, saving intermediate datasets to disk, and treating reproducibility as part of the project rather than as a convenience.
+
+\subsection{Challenge 3: Interpreting results honestly}
+It would have been easy to keep repeating the best OpenForensics validation numbers and call the project done. I did not want to do that. The held-out drop, the Gandhi failure case, the Tiny-GenImage false positives, and the new pilot confusion matrix all forced me to interpret model performance more carefully. I responded by using plots, threshold reasoning, and failure inspection instead of relying on one metric.
+
+\section{Additional Learning Beyond the Work Product}
+
+A substantial part of the learning in this mini-capstone is not reducible to the final detector itself. I learned how to think about benchmark fit, why score calibration and threshold choice matter, how anomaly detection differs from classification, why later semantic layers need different data from the first forensic layer, and why provenance cannot be treated as ``just metadata'' if it is going to be useful. I also learned a practical workflow lesson: if the dataset and the problem statement are mismatched, it is better to correct the mismatch early than to keep pushing a pipeline that is becoming less and less relevant.
+
+\section{HC/LO Reflection}
+
+The main lesson from the HC/LO side of this project is that the most valuable outcomes were not the ones that simply rewarded building a model. The project improved most when I used outcomes that forced me to define the \emph{right} problem, collect the \emph{right} evidence, and present the work in a way that was honest for different audiences. That is why the HC/LO section below is deliberately selective. I would rather explain a smaller number of outcomes well than list many of them shallowly.
+
+\section{Selected HC Applications}
+
+\subsection*{\#rightproblem}
+The most important HC in the whole project was \#rightproblem. The first detector answered a narrower question than the one I actually cared about. OpenForensics let me build a serious real/fake face-image classifier, but the moment I started testing historically impossible or edited-but-plausible examples, it became clear that the benchmark problem and the broader authenticity problem were not the same. Using \#rightproblem meant taking that mismatch seriously instead of treating it as a minor edge case. The redesign into a four-phase AI Shield is the clearest evidence that I used this HC in a meaningful way.
+
+\subsection*{\#evidencebased}
+I used \#evidencebased by letting the redesign follow the evidence rather than my initial plan. The old validation metrics, the held-out test drop, the Gandhi example, the Tiny-GenImage pilot curves, and the false-positive/false-negative grids all served different evidentiary roles. I did not rely on a single headline number. Instead, I used multiple forms of evidence to support the claim that the first detector was useful but insufficient.
+
+\subsection*{\#audience}
+The project required writing for very different audiences. The executive summary had to be understandable to a general reader. The work product had to be technical enough for a professor or ML student to inspect the modeling choices. The process documentation had to explain how the project changed over time. I used \#audience by changing the level of language, the amount of mathematical detail, and the type of examples depending on the section.
+
+\subsection*{\#professionalism}
+The project became more professional when I stopped treating the work as only a notebook exercise. I preserved repositories, linked the deployed app, documented the slide deck, saved plots, and wrote the report as a coherent deliverable. The Streamlit note about the app occasionally going idle is also part of professionalism: it is better to tell the reader the real behavior of the deployed artifact than to pretend every cloud deployment behaves perfectly forever.
+
+\subsection*{\#organization}
+This report only makes sense because the work is explicitly separated into a first detector, a redesigned image pilot, and then a process explanation of the shift between them. I used \#organization both in the report structure and in the project structure: the repositories, notebooks, checkpoints, plots, and links all map cleanly onto stages of the work.
+
+\subsection*{\#dataviz}
+Visualization was not decoration in this project; it was part of the reasoning. The old model-comparison plots justified why EfficientNetV2-B0 was selected. The new pilot training curves showed that the redesigned image pipeline was actually learning. The false-positive and false-negative grids made the model's errors legible in a way that raw metrics could not. Using \#dataviz well meant choosing visuals that answered a question, not just filling pages.
+
+\section{Selected LO Applications}
+
+\subsection*{\#qualitydeliverables}
+I used \#qualitydeliverables by making the project inspectable in multiple forms: report, repositories, deployed app, presentation deck, plots, and training notebook. The deliverable is stronger because the reader can move between the written explanation and the concrete artifacts.
+
+\subsection*{\#curation}
+The project produced more raw material than should appear in the final report. I used \#curation by selecting the plots and examples that were most load-bearing: the old benchmark comparisons, the held-out test result, the Gandhi-style hard-case narrative, the Tiny-GenImage pilot curves, and the false-positive/false-negative grids. That curation is what turns a pile of artifacts into an argument.
+
+\subsection*{\#navigation}
+Navigation appears throughout the project, but especially in the decision to treat the OpenForensics detector as a completed first layer rather than as the final answer. I used \#navigation by changing the scope, the dataset, and the pipeline structure at the right time instead of too early or too late.
+
+\subsection*{\#outcomeanalysis}
+I used \#outcomeanalysis by asking what the model outputs actually meant. A strong AUC does not mean the problem is solved. A deployed app does not mean authenticity is understood. The most important use of this LO was turning the detector's limitations into the justification for the new architecture.
+
+\subsection*{\#cs156-MLCode}
+This project required real ML code, not only conceptual discussion. I wrote and ran training loops, dataloaders, checkpointing logic, evaluation code, and notebook-based pilot experiments. The shift from the original repository to the new repository also reflects code-level evolution rather than just report-level reframing.
+
+\subsection*{\#cs156-MLExplanation}
+A central part of the mini-capstone was explaining the models clearly: what the sigmoid output means, how BCE works, why the threshold matters, how a VAE differs from a supervised classifier, and why later semantic/context/provenance layers are solving different questions. The report's mathematical sections are direct evidence of this LO.
+
+\subsection*{\#cs156-MLMath}
+I used \#cs156-MLMath by interpreting the classifier probabilistically, writing the BCE and VAE objectives explicitly, and explaining how threshold changes alter the confusion-matrix trade-off between false positives and false negatives. This LO was not just about writing equations; it was about using them to reason about the model's behavior.
+
+\subsection*{\#cs162-deployment}
+Deployment is one of the clearest applied outcomes in this project. The first detector was not left as a notebook; it was turned into a Streamlit app that someone else could open and test. That experience also taught me about practical issues such as cloud idling and the difference between a locally correct model and a usable public artifact.
+
+\subsection*{\#cs110-CodeReadability}
+The redesigned repository and Colab workflow pushed me to keep code, notebooks, and outputs organized enough that I could return to them after interruptions and still understand what each part was doing. That kind of readability matters much more once experiments, datasets, and checkpoints begin to multiply.
+
+\section{Timeline}
+
+\begin{center}
+\begin{tikzpicture}[
+    every node/.style={font=\small},
+    event/.style={draw=navy, rounded corners=3pt, align=left, text width=8.6cm, inner sep=6pt},
+    dot/.style={circle, fill=navy, inner sep=2.2pt}
+]
+\draw[very thick, navy] (0,0.2) -- (0,-9.8);
+
+\node[dot] at (0,-0.3) {};
+\node[anchor=east, font=\bfseries\small] at (-0.35,-0.3) {Start};
+\node[event, fill=softblue, anchor=west] at (0.35,-0.3) {\textbf{Initial OpenForensics formulation.} I began with a face-focused real/fake detector using the preserved OpenForensics pipeline and benchmark artifacts.};
+
+\node[dot] at (0,-1.9) {};
+\node[anchor=east, font=\bfseries\small] at (-0.35,-1.9) {Model selection};
+\node[event, fill=softgray, anchor=west] at (0.35,-1.9) {\textbf{Model family comparison.} I compared preserved CNN candidates and selected EfficientNetV2-B0 as the strongest baseline.};
+
+\node[dot] at (0,-3.5) {};
+\node[anchor=east, font=\bfseries\small] at (-0.35,-3.5) {Deployment};
+\node[event, fill=softgreen, anchor=west] at (0.35,-3.5) {\textbf{First public artifact.} I packaged the first detector as a Streamlit app and learned practical lessons about deployment, cloud idling, and usability.};
+
+\node[dot] at (0,-5.1) {};
+\node[anchor=east, font=\bfseries\small] at (-0.35,-5.1) {Hard cases};
+\node[event, fill=softred, anchor=west] at (0.35,-5.1) {\textbf{Problem shift.} Gandhi taking a selfie, Photoshop-style edits, and AI-edited portraits exposed the gap between pixel-level realism and authenticity.};
+
+\node[dot] at (0,-6.7) {};
+\node[anchor=east, font=\bfseries\small] at (-0.35,-6.7) {New repo};
+\node[event, fill=softyellow, anchor=west] at (0.35,-6.7) {\textbf{Pipeline redesign.} I documented the new AI Shield direction in a separate repository with clearer staging, new data choices, and a phase-based image-first plan.};
+
+\node[dot] at (0,-8.3) {};
+\node[anchor=east, font=\bfseries\small] at (-0.35,-8.3) {Tiny-GenImage pilot};
+\node[event, fill=softblue, anchor=west] at (0.35,-8.3) {\textbf{Colab pilot.} I trained the first new-pipeline image model on a balanced Tiny-GenImage subset in Google Colab to establish the redesigned phase-1 workflow.};
+\end{tikzpicture}
+\end{center}
+
+The timeline makes clear that the project is best understood as a sequence of evidence-driven reformulations rather than as a single uninterrupted model-building exercise.
+
+\section{Conclusion}
+
+The best way to summarize the process is this: the first detector was worth building precisely because it was not enough. It gave me something real to measure, deploy, and break. The newer repository and the Tiny-GenImage pilot show that I did not stop at the failure; I used it to build a more honest path toward the full capstone.
+
+
+\section*{References}
+\addcontentsline{toc}{section}{References}
 
 \begin{thebibliography}{9}
 
@@ -263,6 +897,16 @@ ICLR, 2014.
 A. Vaswani et al.,
 \emph{Attention Is All You Need},
 NeurIPS, 2017.
+
+\bibitem{lewis2020retrieval}
+P. Lewis et al.,
+\emph{Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks},
+NeurIPS, 2020.
+
+\bibitem{tinygenimage}
+TheKernel01,
+\emph{Tiny-GenImage dataset card},
+Hugging Face dataset page.
 
 \end{thebibliography}
 
