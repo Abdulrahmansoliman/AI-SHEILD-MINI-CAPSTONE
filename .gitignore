@@ -162,3 +162,10 @@ cython_debug/
 data/
 code/PretrainedModel/dffnetv2B0.h5
 code/PretrainedModel/dffnetv2B0.json
+
+# Local notebook-editing backups and preview images
+*.backup_before_*.ipynb
+_check_*.png
+archived_openforensics_outputs/
+notebook_output_images/
+notebook_patch_easy_copy.md
