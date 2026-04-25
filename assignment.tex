@@ -1,0 +1,735 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=0.85in]{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{xurl}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{pdfpages}
+\usepackage[most]{tcolorbox}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.65em}
+\setlist[itemize]{topsep=0.2em,itemsep=0.15em,leftmargin=1.5em}
+
+\newcommand{\figroot}{figures/notebook_outputs}
+\newcommand{\fakeprob}{P(\mathrm{fake})}
+\newcommand{\deploymenturl}{https://huggingface.co/spaces/AbdelrahmanSoliman/AI_sheild}
+\newcommand{\repourl}{https://github.com/Abdulrahmansoliman/AI-SHEILD-MINI-CAPSTONE}
+\newcommand{\tinygenimageurl}{https://huggingface.co/datasets/TheKernel01/Tiny-GenImage}
+\newcommand{\openforensicsurl}{https://openaccess.thecvf.com/content/ICCV2021/html/Le_OpenForensics_Large-Scale_Challenging_Dataset_for_Multi-Face_Forgery_Detection_and_Segmentation_ICCV_2021_paper.html}
+
+\title{\textbf{AI Shield: A Layered Machine Learning Pipeline for AI-Generated Image Detection}}
+\author{Prof. Watson}
+\date{CS156 Final Project}
+
+
+\begin{document}
+\maketitle
+\pagenumbering{gobble}
+
+\begin{tcolorbox}[
+    enhanced,
+    colback=green!4,
+    colframe=green!45!black,
+    title=\textbf{Project Links},
+    fonttitle=\bfseries,
+    boxrule=0.9pt,
+    arc=2mm,
+    left=3mm,
+    right=3mm,
+    top=2mm,
+    bottom=2mm
+]
+\begin{tabular}{p{0.24\linewidth}p{0.68\linewidth}}
+\textbf{Deployed AI Shield app} &
+\href{\deploymenturl}{\url{\deploymenturl}} \\
+\textbf{GitHub repository} &
+\href{\repourl}{\url{\repourl}} \\
+\end{tabular}
+
+\vspace{0.2em}
+These are the two main links for quickly inspecting the working demo and the project code/artifacts. Dataset source links are included in the data section where each dataset is discussed.
+\end{tcolorbox}
+
+\begin{tcolorbox}[
+    enhanced,
+    colback=blue!5,
+    colframe=blue!65!black,
+    coltitle=white,
+    title=\textbf{Important Reader Note},
+    fonttitle=\bfseries\large,
+    boxrule=1.2pt,
+    arc=3mm,
+    left=3mm,
+    right=3mm,
+    top=3mm,
+    bottom=3mm,
+    attach boxed title to top left={xshift=3mm,yshift=-2mm},
+    boxed title style={
+        colback=blue!65!black,
+        colframe=blue!65!black,
+        arc=2mm,
+        left=2mm,
+        right=2mm
+    }
+]
+
+I wanted to make this submission readable before asking you to go through the full notebooks. In total, I built and evaluated six main models/components across three notebooks. I cleaned the notebooks as much as I could and focused on explaining the machine learning ideas, the metrics, and the parts I implemented myself. However, after exporting the notebooks to PDF, the combined notebook appendices became more than 100 pages.
+
+Because of that, I created this shorter report first. This report gives a clear overview of what I built, why I chose each approach, how the layers connect, and what the main results were. I also included the most important pipeline diagrams and performance plots here so the main story is easy to follow without needing to search through all notebook pages.
+
+The full notebook PDFs are included after this report as reproducibility appendices. They contain the detailed model explanations, mathematical equations, training outputs, intermediate diagnostics, and the actual code I wrote for the custom components. I also added a table of contents and appendix navigation links so it is easier to jump directly to the notebook sections that matter most.
+
+\end{tcolorbox}
+
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\tableofcontents
+\newpage
+
+\section{Why I Built This Project}
+
+My original capstone idea was bigger than this notebook. I wanted to build something I call \textbf{AI Shield}: a system that could help check AI-generated or AI-manipulated videos. The end goal is not just to say ``this file is fake'' from one score. The end goal is to build a layered system that can look at media from different angles: pixels, faces, objects, claims, metadata, and eventually video frames over time.
+
+When I discussed this direction with Professor Watson, the advice was very practical: start with images first, then move to videos. The second piece of advice was to use the machine learning assignments in this class as a real starting point for that larger capstone. That is what I did here. I treated this final project as the first serious prototype of AI Shield.
+
+For images, I think the full system should eventually have four layers:
+
+\begin{enumerate}
+    \item \textbf{Forensic layer:} asks whether the pixels, textures, reconstructions, or face artifacts look suspicious.
+    \item \textbf{Semantic layer:} asks whether image regions make sense together, like faces, hands, lighting, objects, and scene structure.
+    \item \textbf{Context layer:} asks whether the image matches the claim around it. For example, if an image claims to show a historical figure taking a selfie, the context layer should notice the mismatch.
+    \item \textbf{Provenance layer:} asks where the file came from, what metadata exists, whether the upload history is plausible, and whether the source is trustworthy.
+\end{enumerate}
+
+In this assignment I implemented the first two layers in detail:
+
+\begin{itemize}
+    \item Phase 1: a \textbf{forensic layer} with EfficientNet, a VAE anomaly branch, OpenForensics face detection, a face gate, and learned late fusion.
+    \item Phase 2: a \textbf{semantic layer} using a pretrained ViT backbone and my own PyTorch multi-head attention head.
+    \item Phase 3: a final \textbf{GLM fusion layer} that combines the forensic and semantic evidence into one fake probability.
+\end{itemize}
+
+The context and provenance layers are future work. I did not want to pretend I had solved everything. Instead, I wanted this project to be a strong first image-based foundation that can later be extended to context, metadata, and video.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{\figroot/phase1_forensic/phase1_forensic_cell017_output00.png}
+    \caption{The larger AI Shield roadmap. This final project implements the forensic and semantic image layers, then combines them with a learned fusion model.}
+    \label{fig:roadmap}
+\end{figure}
+
+\section{Data and Experimental Setup}
+
+The main supervised image dataset I used was \href{\tinygenimageurl}{\textbf{Tiny-GenImage}}. I used the same saved dataset copy across Phase 1 and Phase 2 so the comparison would be fair. The saved subset was balanced:
+
+\begin{itemize}
+    \item Training: 28,000 images, with 14,000 real and 14,000 fake.
+    \item Validation: 7,000 images, with 3,500 real and 3,500 fake.
+\end{itemize}
+
+I used Tiny-GenImage because the project needs labeled real/fake examples. My personal motivation is to build AI Shield for images and videos I may later upload or analyze, but the supervised detectors need public labeled data first. In this project, the public labeled data is the training ground for the detector. The models then produce a pipeline that can later be applied to my own media or user-submitted files.
+
+\textbf{Dataset source:} \href{\tinygenimageurl}{\url{\tinygenimageurl}}.
+
+For the face-specific branch, I also used \href{\openforensicsurl}{\textbf{OpenForensics}}, a face/manipulation dataset from my earlier training notebook. That earlier experiment had:
+
+\begin{itemize}
+    \item Training: 140,002 images.
+    \item Validation: 39,428 images.
+    \item Held-out test: 10,905 images.
+\end{itemize}
+
+This second dataset had a different purpose. Tiny-GenImage is the broad real-vs-AI image dataset. OpenForensics is face-centered, so it is useful when an input contains people or faces.
+
+\textbf{Dataset/paper source:} \href{\openforensicsurl}{\url{\openforensicsurl}}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\linewidth]{Forensic.png}
+    \caption{Dataset routing for Phase 1. Tiny-GenImage trains the broad image detector and the VAE experiment. OpenForensics is preserved as a face/manipulation branch.}
+    \label{fig:dataset-routing}
+\end{figure}
+
+\section{Phase 1: Forensic Layer}
+
+The forensic layer asks a low-level question:
+
+\begin{quote}
+Do the pixels contain evidence of AI generation or manipulation?
+\end{quote}
+
+I did not want to rely on one detector. I built three forensic signals:
+
+\begin{enumerate}
+    \item an EfficientNet-B0 classifier trained on Tiny-GenImage,
+    \item a real-only convolutional VAE trained as an anomaly detector,
+    \item an OpenForensics EfficientNetV2-B0 face/manipulation detector.
+\end{enumerate}
+
+Then I added a face gate and a learned fusion model to combine these signals.
+
+\subsection{EfficientNet-B0 Broad Image Detector}
+
+The first strong branch was an EfficientNet-B0 binary classifier trained on the balanced Tiny-GenImage subset. I used it because EfficientNet is a good fit for image classification when I want a strong convolutional baseline without building an enormous model. It is efficient, pretrained visual features transfer well, and it gives a clean real/fake probability.
+
+The training path used logits internally:
+
+\[
+\mathcal{L} = \mathrm{BCEWithLogitsLoss}(z, y),
+\]
+
+and then evaluation converted logits to fake probabilities:
+
+\[
+\fakeprob = \sigma(z)=\frac{1}{1+e^{-z}}.
+\]
+
+This distinction mattered because I wanted stable training but interpretable probabilities at evaluation time.
+
+The saved EfficientNet checkpoint reached a best validation AUC of about \textbf{0.953}. On the validation set, the raw threshold-0.5 operating point had:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrrrr}
+\toprule
+Model & AUC & Accuracy & Precision & Recall & F1 & Notes \\
+\midrule
+EfficientNet-B0 raw, $t=0.5$ & 0.954 & 0.871 & 0.988 & 0.752 & 0.854 & very conservative \\
+EfficientNet-B0 calibrated, $t=0.5$ & 0.954 & 0.889 & 0.891 & 0.886 & 0.889 & more balanced \\
+\bottomrule
+\end{tabular}
+\caption{EfficientNet-B0 validation behavior. The raw model ranked images well, but calibration made the operating point less conservative.}
+\label{tab:effnet}
+\end{table}
+
+The main thing I learned was that EfficientNet was strong, but its raw probability threshold was not automatically the best decision rule. At threshold 0.5, the raw model had very high precision but lower recall, meaning it was careful about calling images fake but missed many fakes. Calibration helped make the score more usable.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{\figroot/phase1_forensic/phase1_forensic_cell044_output01.png}
+    \caption{EfficientNet-B0 training history. The AUC curve shows that the classifier learned a strong ranking signal, even though validation loss warned me not to trust only one metric.}
+    \label{fig:effnet-training}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{\figroot/phase1_forensic/phase1_forensic_cell053_output05.png}
+    \caption{EfficientNet ROC and precision-recall curves. This was the first evidence that the broad forensic classifier had real signal.}
+    \label{fig:effnet-roc-pr}
+\end{figure}
+
+\subsection{VAE Real-Only Reconstruction Branch}
+
+The second branch was a convolutional variational autoencoder. The idea was different from EfficientNet. Instead of training directly on real/fake labels, I trained the VAE on real images and asked whether fake images would reconstruct worse.
+
+The VAE encoder produced a latent distribution:
+
+\[
+q_{\phi}(z \mid x)=\mathcal{N}(\mu,\sigma^2),
+\]
+
+then sampled with the reparameterization trick:
+
+\[
+z = \mu + \sigma \odot \epsilon,
+\]
+
+and used reconstruction error as an anomaly score:
+
+\[
+\mathrm{MSE}(x,\hat{x})=\frac{1}{N}\sum_i (x_i-\hat{x}_i)^2.
+\]
+
+This was the most ``from scratch'' model in the forensic layer. I implemented the encoder, decoder, latent sampling, reconstruction loss, KL term, training loop, checkpointing, and error analysis in PyTorch.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{\figroot/phase1_forensic/phase1_forensic_cell014_output00.png}
+    \caption{The VAE branch. This branch tests whether fake images behave like anomalies under a real-only reconstruction model.}
+    \label{fig:vae-architecture}
+\end{figure}
+
+The result was useful, but not in the way I first hoped. The VAE learned to reconstruct images, but its reconstruction error did not separate real and fake images reliably:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrr}
+\toprule
+Quantity & Real validation & Fake validation \\
+\midrule
+Mean reconstruction error & 0.01270 & 0.01362 \\
+Median reconstruction error & 0.01153 & 0.01057 \\
+\bottomrule
+\end{tabular}
+\caption{VAE reconstruction errors. The fake mean was slightly higher, but the median went the other way, so this was not a clean detector.}
+\label{tab:vae-errors}
+\end{table}
+
+As a standalone detector, the VAE AUC was about \textbf{0.470}, which is worse than random ranking. This is why I do not present the VAE as a final detector. I present it as an important experiment: anomaly detection sounded reasonable, but on this dataset reconstruction error was too noisy. It became a supporting feature inside fusion, not the main decision rule.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\linewidth]{\figroot/phase1_forensic/phase1_forensic_cell065_output00.png}
+    \caption{VAE training curves. The model did learn the reconstruction objective, but the later error distributions showed that reconstruction loss alone was not enough for fake detection.}
+    \label{fig:vae-training}
+\end{figure}
+
+\subsection{OpenForensics Face Branch}
+
+I also wanted AI Shield to be strong on people and faces, not only general images. That is why I reused my earlier OpenForensics EfficientNetV2-B0 model.
+
+This model was trained in a previous notebook on face/manipulation data. It used an ImageNet-initialized EfficientNetV2-B0 backbone with a sigmoid classification head. The important detail is that the old model used the opposite label direction:
+
+\[
+\text{old output} = P(\mathrm{real}), \qquad
+\text{fusion feature} = P(\mathrm{fake}) = 1-P(\mathrm{real}).
+\]
+
+I had to handle this carefully because otherwise a high fake score in one branch could mean a high real score in another branch.
+
+The preserved OpenForensics baseline was strong on validation and still useful on the harder held-out test set:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+Metric & Training & Validation & Held-out test \\
+\midrule
+Loss & 0.0031 & 0.1196 & 0.5126 \\
+Accuracy & 0.9777 & 0.9651 & 0.8577 \\
+Precision & 0.9943 & 0.9919 & 0.9188 \\
+Recall & 0.9634 & 0.9498 & 0.7828 \\
+AUC & 0.9932 & 0.9824 & 0.9387 \\
+\bottomrule
+\end{tabular}
+\caption{Preserved OpenForensics EfficientNetV2-B0 results from the earlier training notebook.}
+\label{tab:openforensics}
+\end{table}
+
+The validation performance was very high, but the held-out test drop was important. It showed me that a face detector can be strong and still incomplete. It should be one piece of evidence, not the whole AI Shield.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{\figroot/phase1_forensic/phase1_forensic_cell075_attachment_openforensics_effnetv2b0_training_curves.png}
+    \caption{Preserved OpenForensics EfficientNetV2-B0 training curves. This branch is face-specific evidence, so I later route it through a face gate.}
+    \label{fig:openforensics-curves}
+\end{figure}
+
+\subsection{Face Gate and Learned Phase 1 Fusion}
+
+The face branch created a routing problem. If an image has no valid face, then OpenForensics should not strongly influence the final decision. So I added a computer vision \textbf{FaceGate} before using the OpenForensics score.
+
+The FaceGate detects faces and records:
+
+\begin{itemize}
+    \item whether a valid face is present,
+    \item number of faces,
+    \item largest face area ratio,
+    \item face confidence,
+    \item whether OpenForensics is applicable.
+\end{itemize}
+
+If no valid face is present, I set OpenForensics to a neutral score and mark it not applicable. This was important because the face model should not hallucinate evidence on no-face images.
+
+After caching all branch outputs, I trained a logistic regression fusion model. This is a binomial GLM with a logit link:
+
+\[
+y_i \sim \mathrm{Bernoulli}(p_i),
+\]
+
+\[
+\mathrm{logit}(p_i)=
+\beta_0+\beta_1x_{i1}+\cdots+\beta_kx_{ik}.
+\]
+
+In my project, that means:
+
+\[
+\mathrm{logit}(\fakeprob)
+=
+\beta_0
++ \beta_1(\mathrm{EffNet})
++ \beta_2(\mathrm{VAE})
++ \beta_3(\mathrm{FaceGate})
++ \beta_4(\mathrm{OpenForensics})
++ \cdots.
+\]
+
+The Phase 1 logistic fusion result was:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrrrr}
+\toprule
+Model & AUC & Accuracy & Precision & Recall & F1 & Brier \\
+\midrule
+EfficientNet calibrated & 0.9517 & 0.8921 & 0.8996 & 0.8829 & 0.8911 & 0.0820 \\
+Phase 1 logistic fusion & 0.9542 & 0.8964 & 0.9370 & 0.8500 & 0.8914 & 0.0758 \\
+Optional Phase 1 MLP fusion & 0.9561 & 0.8979 & 0.9318 & 0.8586 & 0.8937 & 0.0746 \\
+\bottomrule
+\end{tabular}
+\caption{Phase 1 fusion results on the held-out fusion test split. The learned fusion slightly improved AUC and calibration, but the VAE and face branch were still not enough to solve the whole problem.}
+\label{tab:phase1-fusion}
+\end{table}
+
+The Phase 1 fusion was helpful, but it also showed a limitation. The forensic layer is good at pixel artifacts and face evidence, but it does not really ask whether the scene makes semantic sense. That pushed me to Phase 2.
+
+\section{Phase 2: Semantic Attention Layer}
+
+The semantic layer asks a different question:
+
+\begin{quote}
+Do the parts of the image make sense together?
+\end{quote}
+
+I intentionally used the same Tiny-GenImage data from Phase 1. I did not want to change the dataset and then confuse the result. If I used a new dataset, an improvement could come from the dataset, not from the semantic method. By using the same image universe, I could ask a cleaner question:
+
+\begin{quote}
+Does attention-based semantic evidence add something beyond the forensic evidence on the same images?
+\end{quote}
+
+This choice also made Phase 3 possible because the semantic outputs could be merged with the Phase 1 forensic cache by image ID.
+
+\subsection{ViT Backbone and My Custom Attention Head}
+
+I did not train a whole transformer from scratch because that would be unrealistic for this assignment and Colab. Instead, I used a pretrained ViT backbone to get patch tokens, then implemented my own semantic transformer head in PyTorch.
+
+The pipeline was:
+
+\[
+\text{image}
+\rightarrow
+\text{ViT patch tokens}
+\rightarrow
+\text{custom multi-head self-attention}
+\rightarrow
+\text{MLP refinement}
+\rightarrow
+\text{attention pooling}
+\rightarrow
+\fakeprob.
+\]
+
+The custom attention head is the important hand-built part. For each head, I compute queries, keys, and values:
+
+\[
+Q=XW_Q,\qquad K=XW_K,\qquad V=XW_V.
+\]
+
+Then attention is:
+
+\[
+A=\mathrm{softmax}\left(\frac{QK^\top}{\sqrt{d_h}}\right),
+\]
+
+and the updated patch tokens are:
+
+\[
+Z = AV.
+\]
+
+The reason for multiple heads is that one attention pattern is too limited. Different heads can learn different relationships: face to lighting, hands to objects, foreground to background, object boundaries to shadows, or local details to global scene layout.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/notebook_outputs/Attention_pipeline.png}
+    \caption{Phase 2 semantic architecture. The pretrained ViT gives patch tokens, and my custom multi-head attention head learns relationships between patches before producing a semantic fake score.}
+    \label{fig:semantic-architecture}
+\end{figure}
+
+The model had about \textbf{87.2 million} total parameters, but only about \textbf{856,578 trainable parameters} because the ViT backbone was frozen first and the custom head was trained. That was a practical compromise: I used a strong pretrained visual backbone, but the semantic reasoning head was my own trainable module.
+
+\subsection{Semantic Results}
+
+The semantic branch by itself was not as strong as the final fusion model, but it clearly learned useful signal:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrrrr}
+\toprule
+Split & AUC & Accuracy & Precision & Recall & F1 & Brier \\
+\midrule
+Semantic validation & 0.9196 & 0.8354 & 0.7981 & 0.8979 & 0.8450 & 0.1207 \\
+Semantic test & 0.9256 & 0.8393 & 0.7992 & 0.9063 & 0.8494 & 0.1164 \\
+\bottomrule
+\end{tabular}
+\caption{Semantic ViT + custom attention results. The branch has high recall, meaning it catches many fake images, but it also produces more false positives than EfficientNet.}
+\label{tab:semantic}
+\end{table}
+
+The test confusion counts were:
+
+\[
+\mathrm{TN}=2703,\quad \mathrm{FP}=797,\quad \mathrm{FN}=328,\quad \mathrm{TP}=3172.
+\]
+
+So the semantic branch was aggressive. It caught many fake images, but it also flagged many real images as fake. That is exactly why it should not be the only detector. It is useful because it sees a different kind of evidence, but it needs fusion to balance its mistakes.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.62\linewidth]{\figroot/phase2_semantic/phase2_semantic_cell036_output00.png}
+    \caption{Semantic reliability curve. The semantic model has useful ranking signal, but its probability calibration is not as clean as the final GLM.}
+    \label{fig:semantic-reliability}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{\figroot/phase2_semantic/phase2_semantic_cell036_output01.png}
+    \caption{Semantic score distribution. The semantic branch separates many real and fake images, but overlap remains, especially in the middle probability range.}
+    \label{fig:semantic-distribution}
+\end{figure}
+
+\section{Phase 3: Final Forensic + Semantic GLM Fusion}
+
+The final notebook combines Phase 1 and Phase 2. I merged:
+
+\begin{itemize}
+    \item 7,000 Phase 1 forensic rows,
+    \item 7,000 Phase 2 semantic rows,
+    \item into 7,000 aligned fusion rows.
+\end{itemize}
+
+Then I created a leakage-safe fusion split:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+Fusion split & Real & Fake & Total \\
+\midrule
+Train & 2100 & 2100 & 4200 \\
+Validation & 700 & 700 & 1400 \\
+Test & 700 & 700 & 1400 \\
+\bottomrule
+\end{tabular}
+\caption{Phase 3 split. The GLM trains on fusion-train, chooses threshold on fusion-validation, and reports final metrics on fusion-test.}
+\label{tab:phase3-split}
+\end{table}
+
+The final GLM uses 17 features:
+
+\begin{itemize}
+    \item 11 forensic features from EfficientNet, VAE, FaceGate, and OpenForensics.
+    \item 6 semantic features from the ViT attention model.
+\end{itemize}
+
+The model is still interpretable because each feature gets one coefficient. A positive coefficient pushes the final prediction toward fake. A negative coefficient pushes it toward real.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.78\linewidth]{figures/notebook_outputs/final pipline.png}
+    \caption{Full pipline}
+    \label{fig:placeholder}
+\end{figure}
+
+\subsection{Final Results}
+
+The final result is the strongest result in the project:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrrrr}
+\toprule
+Model & AUC & Accuracy & Precision & Recall & F1 & Brier \\
+\midrule
+EfficientNet calibrated & 0.9558 & 0.9029 & 0.9393 & 0.8614 & 0.8987 & 0.0779 \\
+Semantic ViT & 0.9303 & 0.8593 & 0.8403 & 0.8871 & 0.8631 & 0.1134 \\
+Naive average & 0.9763 & 0.9171 & 0.8893 & 0.9529 & 0.9200 & 0.0704 \\
+Forensic-only GLM & 0.9578 & 0.8971 & 0.9187 & 0.8714 & 0.8944 & 0.0747 \\
+\textbf{Full forensic + semantic GLM} & \textbf{0.9819} & \textbf{0.9407} & \textbf{0.9426} & \textbf{0.9386} & \textbf{0.9406} & \textbf{0.0493} \\
+\bottomrule
+\end{tabular}
+\caption{Final Phase 3 test metrics. The full GLM is the strongest model across AUC, accuracy, F1, and Brier score.}
+\label{tab:phase3-results}
+\end{table}
+
+The most important comparison is against EfficientNet alone:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrr}
+\toprule
+Model & True real correct & Real wrongly fake & Fake wrongly real & True fake correct \\
+\midrule
+EfficientNet calibrated & 661 & 39 & 97 & 603 \\
+Full forensic + semantic GLM & 660 & 40 & 43 & 657 \\
+\bottomrule
+\end{tabular}
+\caption{Practical mistake comparison. The final GLM catches 54 more fake images than EfficientNet alone while adding only one extra false positive.}
+\label{tab:mistakes}
+\end{table}
+
+That is the clearest result. The final model catches many more fakes without becoming much more unfair to real images.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{\figroot/phase3_fusion/phase3_fusion_cell028_output01.png}
+    \caption{Phase 3 ROC and precision-recall curves. The full GLM curve is strongest, showing that forensic and semantic evidence together give the best ranking.}
+    \label{fig:phase3-roc-pr}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\linewidth]{\figroot/phase3_fusion/phase3_fusion_cell028_output02.png}
+    \caption{Final full-GLM confusion matrix on the fusion test set. The model gets 1,317 of 1,400 test images correct.}
+    \label{fig:phase3-confusion}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.62\linewidth]{\figroot/phase3_fusion/phase3_fusion_cell028_output00.png}
+    \caption{Full-GLM reliability curve. The final probability estimates are much better calibrated than the individual semantic branch.}
+    \label{fig:phase3-reliability}
+\end{figure}
+
+\subsection{What the GLM Learned}
+
+The coefficient plot is important because it tells me what the final model trusted:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.82\linewidth]{\figroot/phase3_fusion/phase3_fusion_cell031_output01.png}
+    \caption{Standardized GLM coefficients. The semantic ViT logit is the strongest feature, while EfficientNet remains central.}
+    \label{fig:phase3-coefficients}
+\end{figure}
+
+The largest coefficient was:
+
+\[
+\mathrm{semantic\_vit\_logit}=+2.3509.
+\]
+
+That is important because it means the semantic branch became the strongest new signal in the final model. The next largest signals were EfficientNet features:
+
+\[
+\mathrm{effnet\_prob}=+1.5015,\qquad
+\mathrm{effnet\_calibrated\_prob}=+1.1547.
+\]
+
+So the final model did not replace the forensic layer. It combined the broad forensic score with semantic attention evidence. The VAE and OpenForensics features were smaller. That matches the earlier experiments: VAE was not a strong standalone detector, and OpenForensics only applies to face-relevant cases.
+
+One coefficient looks strange at first:
+
+\[
+\mathrm{semantic\_vit\_prob}=-0.5286.
+\]
+
+I do not interpret that as ``semantic probability means real.'' The semantic logit and semantic probability are highly correlated versions of the same model output. Logistic regression can split weights between correlated variables in unintuitive ways after scaling. The safer interpretation is that the semantic branch matters strongly overall, and the raw logit was the version the GLM trusted most.
+
+\section{What I Implemented Myself vs. What I Reused}
+
+I want to be clear about implementation depth.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{p{0.25\linewidth}p{0.31\linewidth}p{0.34\linewidth}}
+\toprule
+Component & What I reused & What I implemented or trained \\
+\midrule
+EfficientNet-B0 forensic branch & EfficientNet architecture and pretrained image features & PyTorch training/evaluation pipeline, calibration, threshold analysis, artifact caching \\
+VAE anomaly branch & General VAE idea & Encoder/decoder, latent sampling, losses, training loop, reconstruction-error analysis \\
+OpenForensics branch & EfficientNetV2-B0 backbone and saved Keras model format & Earlier fine-tuning, score-direction correction, frozen load-only wrapper \\
+FaceGate & Pretrained face detector & Valid-face routing logic, face features, neutral fallback for no-face images \\
+Semantic ViT branch & Pretrained ViT backbone & Custom multi-head attention head, MLP refinement, attention pooling, semantic cache \\
+Fusion layer & Logistic regression algorithm & Feature-table design, leakage-safe splits, threshold tuning, coefficient interpretation \\
+\bottomrule
+\end{tabular}
+\caption{Implementation framing. I reused pretrained backbones where that was scientifically practical, but I implemented the custom semantic attention head, VAE, routing, caching, and fusion design around them.}
+\label{tab:implementation-depth}
+\end{table}
+
+The strongest custom ML component is the Phase 2 semantic head. The pretrained ViT gives patch tokens, but my PyTorch head computes multi-head self-attention over those tokens and learns how to pool them for a fake/real decision. That is the main novel method in the assignment.
+
+\section{Limitations and Next Steps}
+
+The project worked, but it is not finished.
+
+\begin{itemize}
+    \item The VAE was a useful experiment but not a strong standalone detector.
+    \item The face branch is only meaningful when there is a valid face.
+    \item Tiny-GenImage is useful for aligned comparison, but future testing should include more generators and more real-world image sources.
+    \item The semantic layer currently looks only at images, not external claims or captions.
+    \item The provenance layer is still future work.
+    \item Video detection will need temporal consistency and frame-to-frame reasoning.
+\end{itemize}
+
+The next two layers I would add are context and provenance. Context would compare the image with claims around it. Provenance would inspect metadata, source history, and upload evidence. After that, the same architecture can move toward video, where the system would add temporal consistency instead of judging each frame independently.
+
+\section{Conclusion}
+
+This project started as a practical first version of AI Shield. I followed the advice to start with images before videos, and I used the machine learning assignment as the first serious prototype.
+
+The final system is not one giant model. It is a layered pipeline:
+
+\[
+\text{forensic evidence}
+\;+\;
+\text{semantic attention evidence}
+\xrightarrow{\mathrm{GLM}}
+\text{final fake probability}.
+\]
+
+The final numbers support the design. EfficientNet alone was already strong, but the full forensic + semantic GLM improved the test F1 from about \textbf{0.899} to \textbf{0.941}. It also reduced false negatives from \textbf{97} to \textbf{43} while adding only one extra false positive compared with EfficientNet calibrated alone.
+
+That is the main result I want the reader to take away: the semantic attention layer added real complementary signal, and the learned GLM fusion made the final detector stronger and more interpretable than any single branch.
+
+\section{Appendix Navigation}
+
+The full notebooks are included separately as reproducibility appendices. The main report above is the story and key evidence. The notebooks contain the full code, saved outputs, and detailed intermediate diagnostics.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{p{0.22\linewidth}p{0.55\linewidth}p{0.16\linewidth}}
+\toprule
+Appendix & What to inspect & File \\
+\midrule
+Phase 1 & EfficientNet, VAE, OpenForensics, FaceGate, Phase 1 fusion & Phase 1 notebook PDF \\
+Phase 2 & ViT tokens, custom multi-head attention, semantic evaluation & Phase 2 notebook PDF \\
+Phase 3 & Forensic + semantic GLM, final metrics, coefficients & Phase 3 notebook PDF \\
+\bottomrule
+\end{tabular}
+\caption{Guide to the full notebook appendices.}
+\label{tab:appendix-guide}
+\end{table}
+
+% Optional appendix inclusion. Put exported notebook PDFs in latex_build/notebooks/
+% with these names, and Overleaf will include them automatically.
+\IfFileExists{notebooks/phase1_forensic.pdf}{
+    \clearpage
+    \phantomsection
+    \addcontentsline{toc}{section}{Appendix A: Phase 1 Notebook}
+    \includepdf[pages=-]{notebooks/phase1_forensic.pdf}
+}{}
+
+\IfFileExists{notebooks/phase2_semantic.pdf}{
+    \clearpage
+    \phantomsection
+    \addcontentsline{toc}{section}{Appendix B: Phase 2 Notebook}
+    \includepdf[pages=-]{notebooks/phase2_semantic.pdf}
+}{}
+
+\IfFileExists{notebooks/phase3_fusion.pdf}{
+    \clearpage
+    \phantomsection
+    \addcontentsline{toc}{section}{Appendix C: Phase 3 Notebook}
+    \includepdf[pages=-]{notebooks/phase3_fusion.pdf}
+}{}
+
+
+\end{document}

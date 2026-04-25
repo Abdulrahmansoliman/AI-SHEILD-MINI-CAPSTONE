@@ -169,3 +169,23 @@ _check_*.png
 archived_openforensics_outputs/
 notebook_output_images/
 notebook_patch_easy_copy.md
+
+# Local extracted deployment bundle
+deployment_artifacts/
+ai_shield_deployment_bundle.zip
+hf_space_repo/
+hf_space_ai_shield/
+hf_space_ai_shield/ai_shield_deployment_bundle.zip
+hf_space_ai_shield/__pycache__/
+latex_build/
+__phase3_plot_extract/
+
+# Local heavyweight artifacts and exported reports
+*.pt
+*.pth
+*.ckpt
+*.pkl
+*.h5
+*.npz
+*.pdf
+*.zip

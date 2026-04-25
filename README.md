@@ -1,294 +1,172 @@
-# From Deepfake Detector to AI Shield
+# AI Shield: Forensic + Semantic Deepfake Image Detector
 
-<p align="center">
-  <img src="repo/assets/project_header_image.jpg" alt="Project header" width="520">
-</p>
+AI Shield is my final machine learning project for building a practical image-authenticity pipeline. The long-term goal is a system that can inspect AI-generated images and, later, videos. For this assignment I focused on the image version and built two working layers:
 
-<p align="center">
-  An iterative Computational Sciences capstone project that started as a deployable image-level deepfake detector and is now expanding toward a broader AI Shield for images first and video later.
-</p>
+- **Phase 1: forensic evidence** from low-level visual artifacts, reconstruction error, and face-specific manipulation cues.
+- **Phase 2: semantic evidence** from a ViT-based attention model that looks at how image regions relate to each other.
+- **Phase 3: late fusion** with a GLM/logistic-regression meta-layer that combines both layers into one final fake probability.
 
-<p align="center">
-  <img src="repo/assets/deepfake.gif" alt="App demo" width="760">
-</p>
+The important design choice is that the final model is not one giant black-box image model. Each branch produces evidence, then the final GLM learns how much to trust each evidence source.
 
-## Overview
+## Main Links
 
-This repository currently contains two connected tracks:
+| Resource | Link |
+|---|---|
+| Deployed app | <https://huggingface.co/spaces/AbdelrahmanSoliman/AI_sheild> |
+| GitHub repository | <https://github.com/Abdulrahmansoliman/AI-SHEILD-MINI-CAPSTONE> |
+| Tiny-GenImage dataset | <https://huggingface.co/datasets/TheKernel01/Tiny-GenImage> |
+| OpenForensics paper/dataset page | <https://openaccess.thecvf.com/content/ICCV2021/html/Le_OpenForensics_Large-Scale_Challenging_Dataset_for_Multi-Face_Forgery_Detection_and_Segmentation_ICCV_2021_paper.html> |
+| Original GenImage project | <https://github.com/GenImage-Dataset/GenImage> |
 
-1. A completed, deployed image detector built on OpenForensics and EfficientNetV2-B0.
-2. A new phase-1 pilot pipeline built on Tiny-GenImage in Google Colab, which is the first concrete step toward a broader multi-layer AI Shield.
+## What The App Does
 
-The project changed after stress-testing revealed that high benchmark performance on face-centered real/fake classification is not the same as solving authenticity. Cases such as Gandhi taking a selfie, Photoshop-style edited portraits, and AI-edited photos of people showed that a stronger system needs more than one classifier.
+Upload an image and the deployed app runs:
 
-That is why the longer-term roadmap now has four image phases:
+1. **EfficientNet-B0 forensic classifier**
+   - Broad real/fake image detector trained on Tiny-GenImage.
+   - Produces `effnet_logit`, `effnet_prob`, and calibrated `effnet_calibrated_prob`.
 
-- Phase 1: Low-level forensics
-- Phase 2: Semantic consistency
-- Phase 3: Context verification
-- Phase 4: Provenance
+2. **Real-only VAE anomaly branch**
+   - Learns reconstruction behavior from real images.
+   - Produces reconstruction error and reconstruction-error percentile.
+   - This is an anomaly score, not a direct fake probability.
 
-The video branch comes after the image pipeline is stable.
+3. **Computer-vision face gate**
+   - Checks whether a valid face is present.
+   - Prevents the face-specific model from being trusted on images where no face exists.
 
----
+4. **OpenForensics face branch**
+   - Face-specific manipulation detector.
+   - Only meaningful when the face gate finds a valid face.
 
-## What Is In The Repo Right Now
+5. **Semantic ViT attention branch**
+   - Uses a pretrained ViT backbone plus my custom semantic transformer head.
+   - The custom head includes multi-head self-attention, attention pooling, and a classifier.
+   - Produces semantic fake probability and attention summary features.
 
-| Track | Status | Data | Main model | Main artifact |
-|---|---|---|---|---|
-| OpenForensics detector | Completed and deployed | OpenForensics | EfficientNetV2-B0 | `code/PretrainedModel/dffnetv2B0.zip` |
-| Tiny-GenImage pilot | Experimental, first new-pipeline run | Hugging Face `TheKernel01/Tiny-GenImage` | EfficientNet-B0 | `best.pt` |
-| Streamlit app | Usable | Uses the OpenForensics detector | TensorFlow / Keras | `app.py` |
-| Tiny-GenImage notebook | Reproducible training notebook | Google Colab + Google Drive | PyTorch / timm | `phase1_tiny_genimage_effnet_vae (3).ipynb` |
+6. **Final Phase 3 GLM fusion**
+   - Combines forensic and semantic evidence into one final fake probability.
+   - Also exposes the Phase 1 forensic-only GLM score so the user can compare the forensic layer against the full system.
 
-Important distinction:
+## Final Test Results
 
-- The deployed app currently uses the OpenForensics EfficientNetV2-B0 model.
-- The Tiny-GenImage pilot weights in `best.pt` are not yet wired into the app.
+These are the saved Phase 3 test metrics from the deployment bundle.
 
----
+| Model | AUC | Accuracy | Precision | Recall | F1 | Brier | Threshold |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| EfficientNet calibrated | 0.956 | 0.903 | 0.939 | 0.861 | 0.899 | 0.078 | 0.56 |
+| Semantic ViT attention | 0.930 | 0.859 | 0.840 | 0.887 | 0.863 | 0.113 | 0.64 |
+| Phase 1 forensic-only GLM | 0.958 | 0.897 | 0.919 | 0.871 | 0.894 | 0.075 | 0.39 |
+| Final forensic + semantic GLM | **0.982** | **0.941** | **0.943** | **0.939** | **0.941** | **0.049** | 0.42 |
 
-## Results At A Glance
+The final model improves because it combines two different kinds of evidence. The forensic layer is good at low-level artifact detection. The semantic layer helps when the pixels look clean but the image regions or object relationships still look suspicious.
 
-### 1. Completed OpenForensics detector
-
-The strongest preserved model from the first iteration is EfficientNetV2-B0.
-
-| Metric | Validation | Held-out test |
-|---|---:|---:|
-| Accuracy | 0.9651 | 0.8577 |
-| Precision | 0.9919 | 0.9188 |
-| Recall | 0.9498 | 0.7828 |
-| AUC | 0.9824 | 0.9387 |
-
-These results come from the saved evaluation artifacts in:
-
-- `code/results/model_eval.csv`
-- `code/results/v2b0_history.csv`
-
-### 2. Tiny-GenImage pilot
-
-The new image pipeline was first tested in Google Colab on a balanced pilot subset:
-
-- 4,000 training images
-- 1,000 validation images
-- trained for 8 epochs
-
-Pilot validation result:
-
-- Validation AUC: 0.8503
-- Validation accuracy: 0.7710
-
-This is a pipeline-establishment run, not the final target. The full Tiny-GenImage scale discussed in the notebook is 28K+ images, and the current pilot was intentionally constrained by time and storage limits.
-
----
-
-## Why The Project Changed
-
-The first detector answered a narrower question:
-
-> "Does this image look statistically similar to the real and fake face images the model saw during training?"
-
-That is useful, but it is not the same as:
-
-> "Is this image authentic?"
-
-The difference matters. A model can score an image as visually plausible while still missing:
-
-- semantic inconsistencies
-- contextual impossibilities
-- provenance problems
-- non-face edit patterns outside its training distribution
-
-This is why the project now uses an AI Shield framing rather than pretending one benchmark classifier solves the whole problem.
-
----
-
-## Data Sources
-
-### OpenForensics
-
-Used for the first completed detector.
-
-- Focus: real vs fake face-centered imagery
-- Role in this repo: deployed first iteration and benchmark baseline
-- Reference: `Le et al., ICCV 2021`
+## Dataset Choices
 
 ### Tiny-GenImage
 
-Used for the new phase-1 pilot.
+Tiny-GenImage was the main supervised real/fake image dataset for the Phase 1 and Phase 2 branches. I intentionally kept the same dataset and split across the forensic and semantic notebooks because the goal was to test whether the semantic layer adds complementary information, not whether a new dataset changes the distribution.
 
-- Source: Hugging Face dataset `TheKernel01/Tiny-GenImage`
-- Role in this repo: broader real-vs-AI image pilot for the redesigned pipeline
-- Training environment: Google Colab with Google Drive artifact storage
+Using the same dataset also makes the final fusion clean: every row in the fusion table can align the forensic evidence and semantic evidence for the same image.
 
-Planned future data additions:
+### OpenForensics
 
-- edited-image benchmarks for Photoshop-style and AI-edited photos
-- provenance-oriented data and metadata-rich sources
-- later video datasets for temporal detection
-
----
-
-## Run The Current App
-
-The current Streamlit app loads the OpenForensics EfficientNetV2-B0 detector.
-
-### 1. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 2. Start the app
-
-```bash
-streamlit run app.py
-```
-
-### 3. Model loading behavior
-
-The app expects the deployed TensorFlow model in:
-
-- `code/PretrainedModel/dffnetv2B0.zip`
-
-If the extracted files are missing, the app automatically unpacks:
-
-- `code/PretrainedModel/dffnetv2B0.json`
-- `code/PretrainedModel/dffnetv2B0.h5`
-
-Deployment notes are in:
-
-- [`DEPLOYMENT.md`](DEPLOYMENT.md)
-
----
-
-## Tiny-GenImage Pilot Notebook
-
-The new-pipeline pilot was trained in:
-
-- [`phase1_tiny_genimage_effnet_vae (3).ipynb`](phase1_tiny_genimage_effnet_vae%20(3).ipynb)
-
-The notebook does the following:
-
-- mounts Google Drive in Colab
-- downloads Tiny-GenImage from Hugging Face
-- creates a balanced subset for a practical first run
-- trains an EfficientNet-B0 pilot
-- saves:
-  - `best.pt`
-  - `last.pt`
-  - `history.json`
-  - `training_performance_v1.png`
-
-Typical Colab packages for this notebook include:
-
-- `torch`
-- `torchvision`
-- `timm`
-- `datasets`
-- `scikit-learn`
-- `matplotlib`
-
-The committed pilot weight file currently available in this repo is:
-
-- `best.pt`
-
-This notebook is the first implemented step of the redesigned AI Shield image pipeline.
-
----
+OpenForensics was used for the face-specific branch. This was important because many generated or manipulated images include people, and a general image detector is not always enough for face manipulation. The deployed system uses a face gate so the OpenForensics score is only trusted when a valid face is detected.
 
 ## Repository Map
 
 ```text
 deepfake-image-detector/
-|-- app.py
-|-- streamlit_app.py
-|-- best.pt
 |-- README.md
 |-- DEPLOYMENT.md
-|-- mini_capstone_authenticity_report.tex
-|-- mini_capstone_part1 (1).tex
-|-- phase1_tiny_genimage_effnet_vae (3).ipynb
+|-- requirements.txt
+|-- streamlit_app.py
+|-- ai_shield_app.py
+|-- ai_shield_inference.py
+|-- assignment.tex
+|-- make_ai_shield_deployment_bundle_colab.ipynb
+|-- phase1_ai_shield_oop_colab_report.ipynb
+|-- phase2_semantic_layer_vit_attention_report.ipynb
+|-- phase3_forensic_semantic_glm_fusion_report.ipynb
+|-- scripts/
+|   `-- extract_notebook_figures.py
+|-- src/
+|   |-- ai_shield_cache.py
+|   |-- ai_shield_drive.py
+|   |-- ai_shield_metrics.py
+|   `-- ai_shield_plots.py
 |-- code/
-|   |-- PretrainedModel/
-|   |   |-- dffnetv2B0.zip
-|   |   `-- streamlit_deepfake_detector/
 |   |-- main/
-|   |   |-- Training/
-|   |   `-- Testing/
+|   |-- PretrainedModel/
 |   `-- results/
-|-- repo/
-|   |-- assets/
-|   `-- screenshots/
-`-- requirements.txt
+`-- repo/
+    `-- assets/
 ```
 
----
+## Running Locally
 
-## Reports And Capstone Documentation
+The easiest way to inspect the project is the hosted Hugging Face app:
 
-This repo also contains the current written project materials:
+<https://huggingface.co/spaces/AbdelrahmanSoliman/AI_sheild>
 
-- [`end_to_end_deepfake_report.tex`](end_to_end_deepfake_report.tex)
-- [`mini_capstone_authenticity_report.tex`](mini_capstone_authenticity_report.tex)
-- [`mini_capstone_part1 (1).tex`](mini_capstone_part1%20(1).tex)
+For local inference, the app needs the deployment artifact bundle. The bundle is large, so it is not meant to be edited inside the repo.
 
-These documents explain:
+```bash
+pip install -r requirements.txt
+streamlit run streamlit_app.py
+```
 
-- the first OpenForensics detector
-- the failure cases that changed the project
-- the Tiny-GenImage pilot
-- the four-phase AI Shield direction
+The local app expects:
 
----
+```text
+ai_shield_deployment_bundle.zip
+```
 
-## Limitations
+in the repository root. On first run it extracts the bundle into:
 
-Current limitations are important and intentional to state clearly:
+```text
+deployment_artifacts/
+```
 
-- The deployed app is still tied to the OpenForensics model, which is face-centered.
-- `best.pt` is committed, but it is not yet integrated into the app.
-- The Tiny-GenImage run is a pilot subset, not a full-scale final training run.
-- The broader AI Shield pipeline is partially implemented, not finished.
-- The video branch is still a planned extension.
+Deployment details are in [DEPLOYMENT.md](DEPLOYMENT.md).
 
----
+## Notebooks
 
-## Next Steps
+The report notebooks are the reproducibility appendices for the project:
 
-Planned near-term work:
+| Notebook | Purpose |
+|---|---|
+| `phase1_ai_shield_oop_colab_report.ipynb` | Forensic layer: EfficientNet, VAE, OpenForensics, face-gated fusion |
+| `phase2_semantic_layer_vit_attention_report.ipynb` | Semantic layer: ViT tokens, custom multi-head self-attention, semantic cache |
+| `phase3_forensic_semantic_glm_fusion_report.ipynb` | Final fusion: merge forensic + semantic outputs, train GLM, evaluate |
+| `make_ai_shield_deployment_bundle_colab.ipynb` | Collects trained artifacts from Drive into a deployment bundle |
 
-1. Move the Tiny-GenImage pilot artifacts into a cleaner model directory structure.
-2. Add the next image-phase components:
-   - variational autoencoder for anomaly-sensitive forensics
-   - semantic consistency checks
-   - context and provenance layers
-3. Decide how the experimental `best.pt` model should be evaluated against the deployed OpenForensics baseline.
-4. Extend the image-first system toward video once the image stack is stable.
+The notebooks are written to be Colab-friendly and artifact-safe. They check Drive for existing checkpoints, cached predictions, CSVs, plots, and metrics before running expensive stages.
 
----
+## Hand-Built Parts
 
-## Tech Stack
+The project uses pretrained models where that is the correct engineering choice, but several important parts are implemented directly:
 
-- Python
-- Streamlit
-- TensorFlow / Keras
-- PyTorch
-- timm
-- Hugging Face Datasets
-- NumPy
-- Pandas
-- Pillow
+- custom branch-output caching and feature-table construction
+- face-gated OpenForensics routing logic
+- custom semantic transformer head on top of ViT patch tokens
+- custom multi-head self-attention block in PyTorch
+- late-fusion GLM feature construction and evaluation
+- deployment inference wrapper that reproduces the trained pipeline
 
----
+## Artifact Policy
 
-## Notes For Contributors
+Large model files and generated bundles should not be casually committed to GitHub. The repository keeps the code, notebooks, report source, and helper scripts. The working demo is hosted on Hugging Face, and the notebooks describe where the Google Drive artifacts are stored during training.
 
-If you are opening this repo fresh, the safest mental model is:
+This matters because the trained checkpoints are large and the notebooks already preserve the training outputs. The repo should stay readable enough for someone to understand the project without downloading hundreds of megabytes first.
 
-- Use the Streamlit app for the deployed first model
-- Use the Tiny-GenImage notebook for the experimental second track
-- Do not assume both models currently share the same inference pipeline
+## Project Story
 
-That separation is real and reflects the actual stage of the project.
+This started as a deepfake detector, but the failures of a single classifier made the project more interesting. A real authenticity system needs several kinds of evidence:
+
+- forensic signals for pixel-level artifacts
+- semantic signals for whether image regions make sense together
+- context signals for whether the content is plausible in the real world
+- provenance signals for metadata and source history
+
+This repo implements the first two image layers and a final GLM fusion layer that combines them. Context and provenance are the next planned phases.
