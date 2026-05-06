@@ -6,7 +6,7 @@ import pandas as pd
 from PIL import Image
 import streamlit as st
 
-from ai_shield_inference import (
+from deployment.ai_shield_inference import (
     AIShieldDependencyError,
     DEFAULT_ARTIFACT_DIR,
     DEFAULT_BUNDLE_ZIP,

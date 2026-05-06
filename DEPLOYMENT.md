@@ -24,6 +24,8 @@ The app extracts `ai_shield_deployment_bundle.zip` into `deployment_artifacts/` 
 - Phase 2 semantic ViT attention checkpoint
 - Phase 3 full forensic + semantic GLM fusion model
 
+The root `streamlit_app.py` file is intentionally kept as a tiny deployment entrypoint. The actual app and inference wrapper now live in `deployment/`.
+
 ## Streamlit Community Cloud
 
 1. Push this repository to GitHub.

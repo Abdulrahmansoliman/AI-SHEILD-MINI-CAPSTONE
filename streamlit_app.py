@@ -1,4 +1,4 @@
-from ai_shield_app import main
+from deployment.ai_shield_app import main
 
 
 if __name__ == "__main__":

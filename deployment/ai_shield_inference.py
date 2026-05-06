@@ -11,7 +11,7 @@ import pandas as pd
 from PIL import Image, ImageOps
 
 
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_BUNDLE_ZIP = BASE_DIR / "ai_shield_deployment_bundle.zip"
 DEFAULT_ARTIFACT_DIR = BASE_DIR / "deployment_artifacts"
 
