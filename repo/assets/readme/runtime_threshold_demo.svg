@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="430" viewBox="0 0 1180 430" role="img" aria-labelledby="title desc">
+  <title id="title">Runtime threshold slider behavior</title>
+  <desc id="desc">Diagram showing that the model probability stays fixed while the runtime threshold slider changes only the displayed Real or Fake decision.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .card { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; }
+      .dark { fill: #0f172a; }
+      .blue { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; }
+      .red { fill: #fff1f2; stroke: #e11d48; stroke-width: 2; }
+      .green { fill: #ecfdf5; stroke: #059669; stroke-width: 2; }
+      .text { fill: #0f172a; font-family: Inter, Segoe UI, Arial, sans-serif; }
+      .muted { fill: #475569; font-family: Inter, Segoe UI, Arial, sans-serif; }
+      .white { fill: #f8fafc; font-family: Inter, Segoe UI, Arial, sans-serif; }
+      .title { font-size: 34px; font-weight: 800; }
+      .label { font-size: 22px; font-weight: 760; }
+      .small { font-size: 17px; }
+      .tiny { font-size: 14px; }
+      .arrow { stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1180" height="430" rx="22"/>
+  <text class="text title" x="42" y="58">Runtime threshold slider: no retraining, no rerunning branches</text>
+  <text class="muted small" x="42" y="88">The trained GLM outputs one fake probability. The slider only changes the cutoff used for the label.</text>
+
+  <rect class="card" x="48" y="150" width="260" height="150" rx="18"/>
+  <text class="text label" x="82" y="196">Final GLM output</text>
+  <text class="text title" x="92" y="250">p(fake)</text>
+  <text class="muted small" x="82" y="278">fixed after inference</text>
+
+  <path class="arrow" d="M308 225 L402 225"/>
+
+  <rect class="blue" x="420" y="132" width="330" height="186" rx="18"/>
+  <text class="text label" x="452" y="178">Decision threshold</text>
+  <line x1="462" y1="235" x2="704" y2="235" stroke="#2563eb" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="564" cy="235" r="20" fill="#1d4ed8"/>
+  <text class="text small" x="452" y="286">Best validation threshold: 42%</text>
+  <text class="muted tiny" x="452" y="307">Move lower for more recall, higher for more precision.</text>
+
+  <path class="arrow" d="M750 225 L844 225"/>
+
+  <rect class="green" x="872" y="126" width="258" height="82" rx="16"/>
+  <text class="text label" x="916" y="160">If p &lt; threshold</text>
+  <text class="text small" x="962" y="188">label Real</text>
+
+  <rect class="red" x="872" y="242" width="258" height="82" rx="16"/>
+  <text class="text label" x="916" y="276">If p >= threshold</text>
+  <text class="text small" x="962" y="304">label Fake</text>
+
+  <rect class="dark" x="48" y="352" width="1082" height="42" rx="14"/>
+  <text class="white tiny" x="72" y="378">Important: the slider is for exploring decisions. The model weights, cached branch outputs, and GLM coefficients stay unchanged.</text>
+</svg>

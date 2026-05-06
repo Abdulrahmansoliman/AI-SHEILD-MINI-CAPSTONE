@@ -1,5 +1,9 @@
 # AI Shield: Forensic + Semantic Deepfake Image Detector
 
+<p align="center">
+  <img src="repo/assets/project_header_image.jpg" alt="AI Shield project header" width="760">
+</p>
+
 AI Shield is my final machine learning project for building a practical image-authenticity pipeline. The long-term goal is a system that can inspect AI-generated images and, later, videos. For this assignment I focused on the image version and built two working layers:
 
 - **Phase 1: forensic evidence** from low-level visual artifacts, reconstruction error, and face-specific manipulation cues.
@@ -7,6 +11,14 @@ AI Shield is my final machine learning project for building a practical image-au
 - **Phase 3: late fusion** with a GLM/logistic-regression meta-layer that combines both layers into one final fake probability.
 
 The important design choice is that the final model is not one giant black-box image model. Each branch produces evidence, then the final GLM learns how much to trust each evidence source.
+
+## Visual Overview
+
+<p align="center">
+  <img src="repo/assets/readme/ai_shield_architecture.svg" alt="AI Shield forensic, semantic, and GLM fusion architecture" width="950">
+</p>
+
+This is the main idea of the project. The forensic layer catches pixel-level and face-level evidence. The semantic layer checks whether image regions make sense together. The final GLM layer combines those signals into one interpretable fake probability.
 
 ## Main Links
 
@@ -48,6 +60,14 @@ Upload an image and the deployed app runs:
    - Combines forensic and semantic evidence into one final fake probability.
    - Also exposes the Phase 1 forensic-only GLM score so the user can compare the forensic layer against the full system.
 
+### Semantic Attention Head
+
+<p align="center">
+  <img src="repo/assets/readme/semantic_attention_head.png" alt="Phase 2 semantic branch diagram showing ViT tokens and custom multi-head attention head" width="950">
+</p>
+
+The semantic model does not just ask whether pixels look fake. It uses ViT patch tokens and a custom multi-head attention head so patches can compare themselves with other patches before the classifier makes a decision. This is useful for semantic failures such as strange hands, inconsistent object relationships, or scenes where local textures look clean but the full image does not make sense.
+
 ## Final Test Results
 
 These are the saved Phase 3 test metrics from the deployment bundle.
@@ -60,6 +80,30 @@ These are the saved Phase 3 test metrics from the deployment bundle.
 | Final forensic + semantic GLM | **0.982** | **0.941** | **0.943** | **0.939** | **0.941** | **0.049** | 0.42 |
 
 The final model improves because it combines two different kinds of evidence. The forensic layer is good at low-level artifact detection. The semantic layer helps when the pixels look clean but the image regions or object relationships still look suspicious.
+
+### Fusion Curves
+
+<p align="center">
+  <img src="repo/assets/readme/fusion_roc_pr_curves.png" alt="Phase 3 fusion ROC and precision recall curves" width="950">
+</p>
+
+The red curve is the full forensic + semantic GLM. It gives the strongest ROC-AUC and average precision because it uses both evidence families instead of trusting one branch alone.
+
+### What The GLM Learned
+
+<p align="center">
+  <img src="repo/assets/readme/glm_coefficients.png" alt="Phase 3 full GLM standardized coefficients" width="760">
+</p>
+
+This coefficient plot is why I like the GLM fusion layer. It is not just a black-box average. Positive coefficients push the final decision toward fake, while negative coefficients pull it back toward real after feature scaling. The model learned that both semantic evidence and forensic evidence matter, but not every branch should receive the same weight.
+
+### Runtime Threshold Slider
+
+<p align="center">
+  <img src="repo/assets/readme/runtime_threshold_demo.svg" alt="Runtime threshold slider explanation" width="900">
+</p>
+
+The deployed app includes a threshold slider. Moving it does not retrain or rerun the models. It only changes the cutoff used to convert the final fake probability into a Real/Fake label. The best validation-selected threshold for the final GLM is **42%**.
 
 ## Dataset Choices
 
@@ -101,6 +145,7 @@ deepfake-image-detector/
 |   `-- results/
 `-- repo/
     `-- assets/
+        `-- readme/
 ```
 
 ## Running Locally

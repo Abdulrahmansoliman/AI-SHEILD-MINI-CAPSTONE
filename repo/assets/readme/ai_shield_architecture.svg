@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="620" viewBox="0 0 1280 620" role="img" aria-labelledby="title desc">
+  <title id="title">AI Shield Phase 1, Phase 2, and Phase 3 architecture</title>
+  <desc id="desc">Diagram showing an input image routed into forensic branches, a semantic attention branch, and a final GLM late fusion layer.</desc>
+  <defs>
+    <style>
+      .bg { fill: #0f172a; }
+      .panel { fill: #111827; stroke: #334155; stroke-width: 2; }
+      .input { fill: #172554; stroke: #60a5fa; stroke-width: 2; }
+      .forensic { fill: #1e3a2f; stroke: #34d399; stroke-width: 2; }
+      .semantic { fill: #312e81; stroke: #a78bfa; stroke-width: 2; }
+      .fusion { fill: #3b1f2b; stroke: #fb7185; stroke-width: 2; }
+      .future { fill: #1f2937; stroke: #64748b; stroke-width: 2; stroke-dasharray: 7 5; }
+      .text { fill: #f8fafc; font-family: Inter, Segoe UI, Arial, sans-serif; }
+      .muted { fill: #cbd5e1; font-family: Inter, Segoe UI, Arial, sans-serif; }
+      .small { font-size: 18px; }
+      .tiny { font-size: 15px; }
+      .title { font-size: 36px; font-weight: 800; }
+      .label { font-size: 21px; font-weight: 750; }
+      .arrow { stroke: #cbd5e1; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#cbd5e1" />
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1280" height="620" rx="22"/>
+  <text class="text title" x="48" y="62">AI Shield: late fusion instead of one giant black-box detector</text>
+  <text class="muted small" x="48" y="96">Each branch produces evidence. The final GLM learns how much to trust each signal.</text>
+
+  <rect class="input" x="48" y="245" width="180" height="112" rx="16"/>
+  <text class="text label" x="82" y="292">Input image</text>
+  <text class="muted tiny" x="78" y="322">RGB image uploaded</text>
+  <text class="muted tiny" x="82" y="344">to the demo app</text>
+
+  <rect class="panel" x="286" y="128" width="330" height="304" rx="20"/>
+  <text class="text label" x="314" y="168">Phase 1: forensic layer</text>
+  <text class="muted tiny" x="314" y="196">Low-level fake evidence</text>
+
+  <rect class="forensic" x="318" y="220" width="250" height="52" rx="11"/>
+  <text class="text small" x="350" y="253">EfficientNet-B0</text>
+  <rect class="forensic" x="318" y="292" width="250" height="52" rx="11"/>
+  <text class="text small" x="358" y="325">Real-only VAE</text>
+  <rect class="forensic" x="318" y="364" width="250" height="52" rx="11"/>
+  <text class="text small" x="338" y="397">Face gate + OpenForensics</text>
+
+  <rect class="panel" x="682" y="128" width="270" height="304" rx="20"/>
+  <text class="text label" x="710" y="168">Phase 2: semantic layer</text>
+  <text class="muted tiny" x="710" y="196">Do image regions make sense together?</text>
+
+  <rect class="semantic" x="722" y="235" width="190" height="62" rx="12"/>
+  <text class="text small" x="763" y="262">ViT tokens</text>
+  <text class="muted tiny" x="756" y="282">patch features</text>
+  <rect class="semantic" x="722" y="325" width="190" height="62" rx="12"/>
+  <text class="text small" x="752" y="352">Custom multi-head</text>
+  <text class="muted tiny" x="760" y="372">self-attention</text>
+
+  <rect class="fusion" x="1012" y="213" width="220" height="176" rx="20"/>
+  <text class="text label" x="1050" y="254">Phase 3 GLM</text>
+  <text class="muted tiny" x="1040" y="286">logit(p) = beta0</text>
+  <text class="muted tiny" x="1040" y="310">+ weighted evidence</text>
+  <text class="text small" x="1040" y="351">Final p(fake)</text>
+
+  <rect class="future" x="682" y="474" width="550" height="86" rx="18"/>
+  <text class="text label" x="714" y="510">Next planned layers</text>
+  <text class="muted tiny" x="714" y="540">context verification + provenance + later video temporal consistency</text>
+
+  <path class="arrow" d="M228 301 L286 301"/>
+  <path class="arrow" d="M616 260 C650 260 646 260 682 260"/>
+  <path class="arrow" d="M952 302 L1012 302"/>
+  <path class="arrow" d="M817 432 L817 474"/>
+  <path class="arrow" d="M616 342 C655 342 648 348 682 348"/>
+
+  <text class="muted tiny" x="48" y="585">Forensic signals catch artifacts. Semantic attention catches region-level inconsistency. GLM fusion makes the final decision interpretable.</text>
+</svg>
