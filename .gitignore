@@ -189,3 +189,6 @@ __phase3_plot_extract/
 *.npz
 *.pdf
 *.zip
+
+# Local provenance tools, downloaded fixtures, and generated reports
+.local/
