@@ -192,3 +192,11 @@ __phase3_plot_extract/
 
 # Local provenance tools, downloaded fixtures, and generated reports
 .local/
+
+# Personal editor preferences
+.vscode/settings.json
+
+# Keep the capstone reference guide and presentation deliverables in Git.
+!docs/AI_Shield_Capstone_Reference_Guide.pdf
+!presentations/AI_Shield_Capstone/AI_Shield_Capstone.pdf
+!presentations/AI_Shield_Capstone/AI_Shield_Capstone_Revised.pdf
