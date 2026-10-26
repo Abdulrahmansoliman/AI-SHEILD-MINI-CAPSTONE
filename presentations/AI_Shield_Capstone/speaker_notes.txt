@@ -1,0 +1,86 @@
+SLIDE 01: AI Shield
+
+Introduce the long-term ambition: help people assess AI-generated or manipulated media. Start with images before attempting videos. This presentation follows milestones rather than calendar dates.
+
+
+SLIDE 02: The problem: detection is only one part of verification
+
+Distinguish AI generation, face manipulation, ordinary photo editing, and factual truth. The capstone does not claim to prove whether a scene actually happened.
+
+
+SLIDE 03: How the project evolved
+
+Explain the actual development order. OpenForensics face detection came first, even though the written report presents the later general-image branch before returning to face routing. Each stage answered a limitation discovered in the preceding stage.
+
+
+SLIDE 04: First prototype: a working face detector
+
+This was the first trained model, not a general solution for all synthetic images. OpenForensics validation ROC-AUC was 0.9824 and held-out test ROC-AUC was 0.9387. Do not mix these figures with the later Tiny-GenImage or Dataset v1 experiments.
+
+
+SLIDE 05: Broader forensic evidence: several signals, tested separately
+
+The broader dataset used a balanced 28,000-image training subset and 7,000 original validation images. The VAE's failure is a result, not a hidden omission. A face score was marked inapplicable when no valid face existed. Calibration adjusted score interpretation without retraining the classifier.
+
+
+SLIDE 06: Semantic layer: learning relationships between image patches
+
+This is an important original ML contribution. The reported system had roughly 87.2 million total parameters. Attention was intended to learn relationships among regions, but attention maps do not prove causal explanations or an ability to reason about hands, lighting or world facts.
+
+
+SLIDE 07: First combined system: learned fusion improved its benchmark
+
+Original fusion splits were 4,200 train, 1,400 validation, 1,400 test. The original full GLM correctly classified 1,317 of 1,400 examples. It used a validation threshold around 0.42. The old fusion's results must not be presented as the performance of the current CF detector, or compared directly with scores from a different test set.
+
+
+SLIDE 08: The turning point: the original model struggled on newer data
+
+This audit motivated a change in direction. The old detector can learn patterns tied to its original image sources or generators. This is a possible explanation to investigate, not a proven diagnosis of every error. The comparison included original and fine-tuned Community Forensics.
+
+
+SLIDE 09: A more controlled benchmark: Dataset v1
+
+The development generators included FLUX.2 max, GLM-Image, Seedream 5, Nano Banana 2, and Qwen Image 2. 'Unseen' refers to exclusion from this project's fine-tuning and model selection; it does not independently prove that no pretrained model ever encountered related content.
+
+
+SLIDE 10: Fine-tuning Community Forensics in two stages
+
+Reused the pretrained visual backbone; did not claim to invent Community Forensics. Important engineering fixes included handling the first frame of MPO-style JPEG files and replacing a corrupted cached pretrained checkpoint with a verified download. Inputs use exact image preparation with a 384-pixel crop. Keep detailed hyperparameters in notes.
+
+
+SLIDE 11: Fine-tuned CF became the strongest detector on Dataset v1
+
+These are results on the project's Dataset v1, not a universal performance guarantee. Fine-tuning was not a uniform win for every subgroup: Qwen Image 2 recall fell slightly, about 98.4% to 96.9%. Further source, category and transformation tests remain necessary.
+
+
+SLIDE 12: A second fusion experiment did not earn its complexity
+
+This is a different fusion experiment from the original 17-feature CS156 GLM. The VAE was not included and the old Phase-3 GLM was not reused. The choice favors the measured result and a simpler inference pipeline, not complexity for its own sake.
+
+
+SLIDE 13: Freezing the detector made the application reproducible
+
+This is implementation parity, not a fresh accuracy study. Precise settings: frame 0, EXIF transpose, RGB, resize shorter side 440 with bilinear antialiasing, center crop 384, ImageNet normalization, float32. Default threshold 0.6339887976646423. The fine-tuned checkpoint hash starts 51532d28; it differs from the pretrained checkpoint hash. Neither full hash nor dates need to appear on the slide.
+
+
+SLIDE 14: Added recorded provenance and connected a local backend
+
+Metadata extraction is software, not a newly trained provenance model. Evidence does not change CF's score. The implementation preserves original bytes, keeps embedded and filesystem dates separate, makes GPS opt-in, limits uploads, handles errors and deletes temporary files. C2PA verification is offline: remote manifests and live revocation responses are not fetched. Even trusted signed claims do not prove scene truth. No SDAIE detector was added. Local timing was about 0.9 seconds per image on six CPU fixtures, not a production throughput benchmark.
+
+
+SLIDE 15: Where I am now, and what I need to validate next
+
+The provenance code has a local Git commit; backend changes are not yet committed/pushed. Do not claim Oracle deployment or ARM testing is complete. Hosting architecture is only proposed. The central contribution is the combination of custom modeling, controlled comparisons, documented negative findings, and a verified path from trained weights to usable evidence reporting.
+
+
+SOURCE REGISTER
+Project overview: https://app.notion.com/p/3d4b28a9701681b08a4ecf17f2c617d5
+Implementation history: https://app.notion.com/p/3d4b28a97016815ba2a7ecfade37b97a
+Results and limitations: https://app.notion.com/p/3d4b28a97016818b9665e09a1fe873b1
+Dataset preparation: https://colab.research.google.com/drive/1JgyHuz_RPeWgQf4aemqB0DSry_SvWkPV
+CF fine-tuning: https://colab.research.google.com/drive/1q5CB7k9fdY9ylfqMDQgClVl4k_ogNJef
+Same-image baseline comparison: https://colab.research.google.com/drive/10jl7g0qknxLUCGF1VddbqbVf43oef4oD
+New fusion experiment: https://colab.research.google.com/drive/1Kus5at9casCE1rSVYUSZbEeiZpvNCkOE
+Detector freeze verification: https://colab.research.google.com/drive/1x1PmNrAi1RffEsunQq52HzGmjpY1oj0G
+Verified detector exports: https://drive.google.com/drive/folders/1i8fHQYF3hnp1BWJmwvb-MOK8-7WWmjlI
+GitHub repository (older published state): https://github.com/Abdulrahmansoliman/AI-SHEILD-MINI-CAPSTONE

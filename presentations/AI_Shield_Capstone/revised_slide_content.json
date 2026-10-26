@@ -1,0 +1,2392 @@
+[
+  {
+    "stage": "AI SHIELD / SYSTEM DEVELOPMENT",
+    "title": "AI Shield: the systems I built",
+    "subtitle": "Abdelrahman Soliman | Image detection, model evaluation, and recorded provenance",
+    "notes": "Begin with the actual engineering stages. The initial ambition included video; the implemented scope is images. The original report implements three notebook phases: forensic, semantic, final GLM. The later work evaluates newer generators, fine-tunes CF and builds recorded-provenance software plus a local API. Context checks and video remain future work. Report PDF pp. 3-4 and 18.",
+    "links": [
+      [
+        "Project record",
+        "https://app.notion.com/p/3d4b28a9701681b08a4ecf17f2c617d5"
+      ]
+    ],
+    "items": [
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 166,
+        "w": 278,
+        "h": 219,
+        "fill": "F2F6F5"
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 166,
+        "w": 4,
+        "h": 219,
+        "fill": "00796B"
+      },
+      {
+        "type": "text",
+        "text": "1  Original ML pipeline",
+        "x": 60,
+        "y": 178,
+        "w": 246,
+        "h": 50,
+        "size": 21,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "EfficientNet + custom VAE\nOpenForensics + FaceGate\nCustom ViT attention head\nForensic + semantic GLM",
+        "x": 60,
+        "y": 238,
+        "w": 246,
+        "h": 139,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 341,
+        "y": 166,
+        "w": 278,
+        "h": 219,
+        "fill": "F2F6F5"
+      },
+      {
+        "type": "rect",
+        "x": 341,
+        "y": 166,
+        "w": 4,
+        "h": 219,
+        "fill": "00796B"
+      },
+      {
+        "type": "text",
+        "text": "2  Detector replacement",
+        "x": 357,
+        "y": 178,
+        "w": 246,
+        "h": 50,
+        "size": 21,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "New multi-generator dataset\nSame-image comparison\nTwo-stage CF fine-tuning\nSecond fusion experiment",
+        "x": 357,
+        "y": 238,
+        "w": 246,
+        "h": 139,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 638,
+        "y": 166,
+        "w": 278,
+        "h": 219,
+        "fill": "F2F6F5"
+      },
+      {
+        "type": "rect",
+        "x": 638,
+        "y": 166,
+        "w": 4,
+        "h": 219,
+        "fill": "00796B"
+      },
+      {
+        "type": "text",
+        "text": "3  Current implementation",
+        "x": 654,
+        "y": 178,
+        "w": 246,
+        "h": 50,
+        "size": 21,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Frozen CF inference\nEXIF metadata extraction\nC2PA credential checks\nCombined FastAPI backend",
+        "x": 654,
+        "y": 238,
+        "w": 246,
+        "h": 139,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 449,
+        "w": 872,
+        "h": 40,
+        "fill": "DFF2EA"
+      },
+      {
+        "type": "text",
+        "text": "Current system: fine-tuned Community Forensics + separate provenance evidence.",
+        "x": 56,
+        "y": 454,
+        "w": 848,
+        "h": 30,
+        "size": 17,
+        "color": "00796B",
+        "bold": true
+      }
+    ]
+  },
+  {
+    "stage": "ORIGINAL SYSTEM / PHASE 1",
+    "title": "Forensic layer: three different visual signals",
+    "subtitle": "Tiny-GenImage supplied general images; OpenForensics supplied face-manipulation training.",
+    "notes": "Report PDF pp. 4-10. EfficientNet-B0 training used 28,000 balanced Tiny-GenImage images; original validation contained 7,000. The VAE trained on real images only. The earlier OpenForensics EfficientNetV2-B0 used 140,002 train / 39,428 validation / 10,905 held-out test images. Its output was P(real), so it was converted to P(fake) before fusion. FaceGate used a pretrained face detector plus custom applicability logic. VAE was retained as a supporting feature in the original fusion, despite weak standalone detection.",
+    "links": [
+      [
+        "Phase 1 notebook",
+        "https://colab.research.google.com/drive/1dnixYaksBWkr5lI4JX_W_5ALkXEj-USt"
+      ]
+    ],
+    "items": [
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 163,
+        "w": 278,
+        "h": 230,
+        "fill": "F2F6F5"
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 163,
+        "w": 4,
+        "h": 230,
+        "fill": "00796B"
+      },
+      {
+        "type": "text",
+        "text": "EfficientNet-B0",
+        "x": 60,
+        "y": 175,
+        "w": 246,
+        "h": 50,
+        "size": 21,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Learn real/fake artifacts.\n\nTrained on 28,000 images;\ncalibrated scores and\ncached predictions.",
+        "x": 60,
+        "y": 235,
+        "w": 246,
+        "h": 150,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 341,
+        "y": 163,
+        "w": 278,
+        "h": 230,
+        "fill": "F2F6F5"
+      },
+      {
+        "type": "rect",
+        "x": 341,
+        "y": 163,
+        "w": 4,
+        "h": 230,
+        "fill": "B77B00"
+      },
+      {
+        "type": "text",
+        "text": "Custom real-only VAE",
+        "x": 357,
+        "y": 175,
+        "w": 246,
+        "h": 50,
+        "size": 21,
+        "color": "B77B00",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Test reconstruction error.\n\nBuilt encoder, decoder,\nlatent sampling, losses,\nand training loop.",
+        "x": 357,
+        "y": 235,
+        "w": 246,
+        "h": 150,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 638,
+        "y": 163,
+        "w": 278,
+        "h": 230,
+        "fill": "F2F6F5"
+      },
+      {
+        "type": "rect",
+        "x": 638,
+        "y": 163,
+        "w": 4,
+        "h": 230,
+        "fill": "00796B"
+      },
+      {
+        "type": "text",
+        "text": "OpenForensics + gate",
+        "x": 654,
+        "y": 175,
+        "w": 246,
+        "h": 50,
+        "size": 21,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Detect face manipulation.\n\nFine-tuned face model;\nFaceGate uses its score\nonly with a valid face.",
+        "x": 654,
+        "y": 235,
+        "w": 246,
+        "h": 150,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 449,
+        "w": 872,
+        "h": 40,
+        "fill": "DFF2EA"
+      },
+      {
+        "type": "text",
+        "text": "FaceGate records applicability, face count, size and confidence before fusion.",
+        "x": 56,
+        "y": 454,
+        "w": 848,
+        "h": 30,
+        "size": 17,
+        "color": "00796B",
+        "bold": true
+      }
+    ]
+  },
+  {
+    "stage": "ORIGINAL SYSTEM / PHASE 1 EXPERIMENTS",
+    "title": "What the forensic experiments changed",
+    "subtitle": "Calibration, reconstruction testing, and two learned fusion alternatives.",
+    "notes": "Report PDF pp. 6, 8 and 10. Raw EfficientNet validation precision .988 / recall .752 at threshold .5; calibrated precision .891 / recall .886. AUC stayed about .954. The VAE's real/fake reconstruction errors overlapped: real mean .01270, fake mean .01362; real median .01153, fake median .01057. Standalone VAE AUC .470. Learned Phase-1 fusion results use a separate held-out fusion split and must not be mixed with Phase-3 split results. Optional MLP achieved .9561 versus GLM .9542. This does not imply MLP lost that comparison; GLM remained the interpretable basis for later fusion.",
+    "links": [
+      [
+        "Phase 1 experiments",
+        "https://colab.research.google.com/drive/1dnixYaksBWkr5lI4JX_W_5ALkXEj-USt"
+      ]
+    ],
+    "items": [
+      {
+        "type": "text",
+        "text": "Calibration improved recall",
+        "x": 44,
+        "y": 159,
+        "w": 402,
+        "h": 33,
+        "size": 21,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "At cutoff 0.5: 75.2% -> 88.6%.\nScore adjustment made EfficientNet\nless conservative.",
+        "x": 44,
+        "y": 203,
+        "w": 402,
+        "h": 90,
+        "size": 18,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "VAE reconstruction overlapped",
+        "x": 44,
+        "y": 316,
+        "w": 402,
+        "h": 33,
+        "size": 21,
+        "color": "C84760",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Standalone AUROC ~0.470.\nKept as a supporting feature in the\noriginal fusion, not its main detector.",
+        "x": 44,
+        "y": 359,
+        "w": 402,
+        "h": 80,
+        "size": 18,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "Phase 1 held-out split",
+        "x": 492,
+        "y": 160,
+        "w": 313,
+        "h": 40,
+        "size": 14,
+        "color": "546966",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "AUROC",
+        "x": 821,
+        "y": 160,
+        "w": 87,
+        "h": 40,
+        "size": 14,
+        "color": "546966",
+        "bold": true
+      },
+      {
+        "type": "rect",
+        "x": 484,
+        "y": 200,
+        "w": 432,
+        "h": 1,
+        "fill": "DCE5E2"
+      },
+      {
+        "type": "text",
+        "text": "Calibrated EfficientNet",
+        "x": 492,
+        "y": 213,
+        "w": 313,
+        "h": 45,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "0.9517",
+        "x": 821,
+        "y": 213,
+        "w": 87,
+        "h": 45,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "Logistic fusion (GLM)",
+        "x": 492,
+        "y": 266,
+        "w": 313,
+        "h": 45,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "0.9542",
+        "x": 821,
+        "y": 266,
+        "w": 87,
+        "h": 45,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 484,
+        "y": 312,
+        "w": 432,
+        "h": 51,
+        "fill": "DFF2EA"
+      },
+      {
+        "type": "text",
+        "text": "Small neural fusion (MLP)",
+        "x": 492,
+        "y": 319,
+        "w": 313,
+        "h": 45,
+        "size": 17,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "0.9561",
+        "x": 821,
+        "y": 319,
+        "w": 87,
+        "h": 45,
+        "size": 17,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Small gains from forensic fusion;\nnext, test image-region relationships.",
+        "x": 492,
+        "y": 386,
+        "w": 410,
+        "h": 60,
+        "size": 17,
+        "color": "546966",
+        "bold": false
+      }
+    ]
+  },
+  {
+    "stage": "ORIGINAL SYSTEM / PHASE 2",
+    "title": "Semantic layer: my custom attention head",
+    "subtitle": "Pretrained ViT patch features + a trainable PyTorch head.",
+    "notes": "Report PDF pp. 11-13 and 18. The same Tiny-GenImage image universe supported forensic and semantic work so the caches could later be aligned by image ID. Implemented query/key/value projections and multi-head self-attention, MLP refinement, and attention pooling. Backbone frozen; 856,578 trainable custom-head parameters, about 87.2M total. Standalone semantic test on 7,000 images: AUROC .9256, recall .9063, accuracy .8393; TN2703 FP797 FN328 TP3172. The .9303 semantic AUROC on slide 6 uses the smaller Phase-3 test subset. Region reasoning was the motivation, not proof of factual/caption understanding.",
+    "links": [
+      [
+        "Phase 2 notebook",
+        "https://colab.research.google.com/drive/1r5V9lWqO7ZM1TNSB2n80lOHfjQ_Gxnv2"
+      ]
+    ],
+    "items": [
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 172,
+        "w": 206,
+        "h": 82,
+        "fill": "F2F6F5"
+      },
+      {
+        "type": "text",
+        "text": "ViT patch tokens",
+        "x": 54,
+        "y": 190,
+        "w": 186,
+        "h": 50,
+        "size": 19,
+        "color": "172C2B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": ">",
+        "x": 251,
+        "y": 195,
+        "w": 17,
+        "h": 30,
+        "size": 20,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "rect",
+        "x": 266,
+        "y": 172,
+        "w": 206,
+        "h": 82,
+        "fill": "DFF2EA"
+      },
+      {
+        "type": "text",
+        "text": "Multi-head attention",
+        "x": 276,
+        "y": 190,
+        "w": 186,
+        "h": 50,
+        "size": 19,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": ">",
+        "x": 473,
+        "y": 195,
+        "w": 17,
+        "h": 30,
+        "size": 20,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "rect",
+        "x": 488,
+        "y": 172,
+        "w": 206,
+        "h": 82,
+        "fill": "DFF2EA"
+      },
+      {
+        "type": "text",
+        "text": "MLP refinement",
+        "x": 498,
+        "y": 190,
+        "w": 186,
+        "h": 50,
+        "size": 19,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": ">",
+        "x": 695,
+        "y": 195,
+        "w": 17,
+        "h": 30,
+        "size": 20,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "rect",
+        "x": 710,
+        "y": 172,
+        "w": 206,
+        "h": 82,
+        "fill": "DFF2EA"
+      },
+      {
+        "type": "text",
+        "text": "Attention pooling",
+        "x": 720,
+        "y": 190,
+        "w": 186,
+        "h": 50,
+        "size": 19,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "What I implemented",
+        "x": 44,
+        "y": 291,
+        "w": 430,
+        "h": 35,
+        "size": 22,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Queries, keys and values; patch interactions;\nrefinement and learned pooling.\n856,578 trainable parameters.",
+        "x": 44,
+        "y": 341,
+        "w": 430,
+        "h": 90,
+        "size": 19,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "What the test showed",
+        "x": 510,
+        "y": 291,
+        "w": 406,
+        "h": 35,
+        "size": 22,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "AUROC 0.9256; recall 90.63%.\nCaught many generated images,\nbut also flagged 797 / 3,500 real images.",
+        "x": 510,
+        "y": 341,
+        "w": 406,
+        "h": 90,
+        "size": 18,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 449,
+        "w": 872,
+        "h": 40,
+        "fill": "DFF2EA"
+      },
+      {
+        "type": "text",
+        "text": "Useful complementary signal; tested with the forensic features in Phase 3.",
+        "x": 56,
+        "y": 454,
+        "w": 848,
+        "h": 30,
+        "size": 17,
+        "color": "00796B",
+        "bold": true
+      }
+    ]
+  },
+  {
+    "stage": "ORIGINAL SYSTEM / PHASE 3",
+    "title": "Final fusion: combine evidence from the same image",
+    "subtitle": "A logistic-regression GLM learned how much weight to give each feature.",
+    "notes": "Report PDF pp. 14 and 17-18. Merged 7,000 forensic rows and 7,000 semantic rows by image identity into 7,000 aligned examples, then split meta-model data 4,200/1,400/1,400. 11 forensic features and 6 semantic features. The report calls the meta-model splits leakage-safe; that does not independently establish isolation of all upstream calibration/model selection steps. Semantic logit had standardized coefficient +2.3509; EfficientNet probability +1.5015 and calibrated probability +1.1547. Correlated logits/probabilities mean individual coefficients are not causal feature importance.",
+    "links": [
+      [
+        "Phase 3 notebook",
+        "https://colab.research.google.com/drive/1rstMyTcOg-Hrmq22erlgfNibx7MaCmP9"
+      ]
+    ],
+    "items": [
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 169,
+        "w": 340,
+        "h": 107,
+        "fill": "F2F6F5"
+      },
+      {
+        "type": "text",
+        "text": "11 forensic features",
+        "x": 60,
+        "y": 181,
+        "w": 305,
+        "h": 33,
+        "size": 22,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "EfficientNet, VAE, face score,\nface presence and applicability",
+        "x": 60,
+        "y": 223,
+        "w": 305,
+        "h": 50,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 297,
+        "w": 340,
+        "h": 107,
+        "fill": "F2F6F5"
+      },
+      {
+        "type": "text",
+        "text": "6 semantic features",
+        "x": 60,
+        "y": 309,
+        "w": 305,
+        "h": 33,
+        "size": 22,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "ViT attention model outputs\nand derived score features",
+        "x": 60,
+        "y": 351,
+        "w": 305,
+        "h": 50,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": ">",
+        "x": 399,
+        "y": 266,
+        "w": 32,
+        "h": 40,
+        "size": 28,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "rect",
+        "x": 448,
+        "y": 213,
+        "w": 215,
+        "h": 150,
+        "fill": "DFF2EA"
+      },
+      {
+        "type": "text",
+        "text": "17-feature GLM",
+        "x": 462,
+        "y": 232,
+        "w": 187,
+        "h": 38,
+        "size": 21,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Learned weights\nfor a single\nreal/fake score",
+        "x": 462,
+        "y": 278,
+        "w": 187,
+        "h": 74,
+        "size": 18,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": ">",
+        "x": 680,
+        "y": 266,
+        "w": 32,
+        "h": 40,
+        "size": 28,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "rect",
+        "x": 728,
+        "y": 230,
+        "w": 188,
+        "h": 111,
+        "fill": "F2F6F5"
+      },
+      {
+        "type": "text",
+        "text": "Final prediction",
+        "x": 740,
+        "y": 245,
+        "w": 164,
+        "h": 40,
+        "size": 19,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Threshold chosen\non validation",
+        "x": 740,
+        "y": 287,
+        "w": 164,
+        "h": 49,
+        "size": 16,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 449,
+        "w": 872,
+        "h": 40,
+        "fill": "DFF2EA"
+      },
+      {
+        "type": "text",
+        "text": "Fusion splits: 4,200 train | 1,400 validation | 1,400 test.",
+        "x": 56,
+        "y": 454,
+        "w": 848,
+        "h": 30,
+        "size": 17,
+        "color": "00796B",
+        "bold": true
+      }
+    ]
+  },
+  {
+    "stage": "ORIGINAL SYSTEM / PHASE 3 RESULTS",
+    "title": "Phase 3 results: full GLM fusion",
+    "subtitle": "All rows below use the same 1,400-image Tiny-GenImage fusion test.",
+    "notes": "Report PDF pp. 15-17. Exact accuracy .9407, F1 .9406, Brier .0493, AUROC .9819. Naive average .9763/.9171 accuracy. Full GLM confusion TN660 FP40 FN43 TP657, compared with calibrated EfficientNet TN661 FP39 FN97 TP603. 54 extra true positives with 1 extra false positive. These are historical results on the original dataset and must not be interpreted as CF metrics. AUROC is threshold-independent ranking performance; .5 is chance-level and 1 perfect.",
+    "links": [
+      [
+        "Original results",
+        "https://colab.research.google.com/drive/1rstMyTcOg-Hrmq22erlgfNibx7MaCmP9"
+      ]
+    ],
+    "items": [
+      {
+        "type": "text",
+        "text": "Model",
+        "x": 52,
+        "y": 156,
+        "w": 510,
+        "h": 40,
+        "size": 14,
+        "color": "546966",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "AUROC",
+        "x": 578,
+        "y": 156,
+        "w": 157,
+        "h": 40,
+        "size": 14,
+        "color": "546966",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Accuracy",
+        "x": 751,
+        "y": 156,
+        "w": 157,
+        "h": 40,
+        "size": 14,
+        "color": "546966",
+        "bold": true
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 196,
+        "w": 872,
+        "h": 1,
+        "fill": "DCE5E2"
+      },
+      {
+        "type": "text",
+        "text": "Calibrated EfficientNet",
+        "x": 52,
+        "y": 209,
+        "w": 510,
+        "h": 35,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "0.9558",
+        "x": 578,
+        "y": 209,
+        "w": 157,
+        "h": 35,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "90.29%",
+        "x": 751,
+        "y": 209,
+        "w": 157,
+        "h": 35,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "Semantic attention",
+        "x": 52,
+        "y": 252,
+        "w": 510,
+        "h": 35,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "0.9303",
+        "x": 578,
+        "y": 252,
+        "w": 157,
+        "h": 35,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "85.93%",
+        "x": 751,
+        "y": 252,
+        "w": 157,
+        "h": 35,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "Naive average",
+        "x": 52,
+        "y": 295,
+        "w": 510,
+        "h": 35,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "0.9763",
+        "x": 578,
+        "y": 295,
+        "w": 157,
+        "h": 35,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "91.71%",
+        "x": 751,
+        "y": 295,
+        "w": 157,
+        "h": 35,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "Forensic-only GLM",
+        "x": 52,
+        "y": 338,
+        "w": 510,
+        "h": 35,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "0.9578",
+        "x": 578,
+        "y": 338,
+        "w": 157,
+        "h": 35,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "89.71%",
+        "x": 751,
+        "y": 338,
+        "w": 157,
+        "h": 35,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 374,
+        "w": 872,
+        "h": 41,
+        "fill": "DFF2EA"
+      },
+      {
+        "type": "text",
+        "text": "Full forensic + semantic GLM",
+        "x": 52,
+        "y": 381,
+        "w": 510,
+        "h": 35,
+        "size": 17,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "0.9819",
+        "x": 578,
+        "y": 381,
+        "w": 157,
+        "h": 35,
+        "size": 17,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "94.07%",
+        "x": 751,
+        "y": 381,
+        "w": 157,
+        "h": 35,
+        "size": 17,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 449,
+        "w": 872,
+        "h": 40,
+        "fill": "DFF2EA"
+      },
+      {
+        "type": "text",
+        "text": "54 more generated images caught, with 1 extra false positive vs. EfficientNet.",
+        "x": 56,
+        "y": 454,
+        "w": 848,
+        "h": 30,
+        "size": 17,
+        "color": "00796B",
+        "bold": true
+      }
+    ]
+  },
+  {
+    "stage": "NEW EXPERIMENTS / DATASET V1",
+    "title": "New data: multiple generators + real photographs",
+    "subtitle": "5,124 images total: 2,562 real and 2,562 generated.",
+    "notes": "Dataset preparation notebook is the source of Qwen-Image-Bench generated images and Open Images V7 real photos. Training families: nano-banana-2.0, Seedream-5.0, FLUX.2_max, Qwen-Image-2.0-pro, GLM-Image. gpt-image-2 held out. Development split grouping uses prompt ID. Qwen's quality ratings are not used as detection labels. Dataset source version and file identities were recorded. Unseen here means held out from this project's fine-tuning/selection, not a claim about all CF pretraining. Real examples were sampled from Open Images' source validation collection and repartitioned for this project.",
+    "links": [
+      [
+        "Dataset notebook",
+        "https://colab.research.google.com/drive/1JgyHuz_RPeWgQf4aemqB0DSry_SvWkPV"
+      ],
+      [
+        "Qwen data",
+        "https://huggingface.co/datasets/Qwen/Qwen-Image-Bench"
+      ],
+      [
+        "Real photos",
+        "https://storage.googleapis.com/openimages/web/download_v7.html"
+      ]
+    ],
+    "items": [
+      {
+        "type": "text",
+        "text": "Generated: Qwen-Image-Bench",
+        "x": 44,
+        "y": 158,
+        "w": 470,
+        "h": 34,
+        "size": 22,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "FLUX.2 max / GLM-Image / Seedream 5\nNano Banana 2 / Qwen-Image-2.0-pro\n\nGPT Image 2 reserved for a separate test.",
+        "x": 44,
+        "y": 207,
+        "w": 475,
+        "h": 129,
+        "size": 18,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "Real: Open Images V7",
+        "x": 44,
+        "y": 360,
+        "w": 470,
+        "h": 34,
+        "size": 22,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Real photographs provide the comparison\nclass and reveal false alarms.",
+        "x": 44,
+        "y": 404,
+        "w": 470,
+        "h": 61,
+        "size": 18,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "Split",
+        "x": 559,
+        "y": 163,
+        "w": 249,
+        "h": 40,
+        "size": 14,
+        "color": "546966",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Images",
+        "x": 824,
+        "y": 163,
+        "w": 84,
+        "h": 40,
+        "size": 14,
+        "color": "546966",
+        "bold": true
+      },
+      {
+        "type": "rect",
+        "x": 551,
+        "y": 203,
+        "w": 365,
+        "h": 1,
+        "fill": "DCE5E2"
+      },
+      {
+        "type": "text",
+        "text": "Training",
+        "x": 559,
+        "y": 216,
+        "w": 249,
+        "h": 44,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "2,990",
+        "x": 824,
+        "y": 216,
+        "w": 84,
+        "h": 44,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "Validation",
+        "x": 559,
+        "y": 268,
+        "w": 249,
+        "h": 44,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "640",
+        "x": 824,
+        "y": 268,
+        "w": 84,
+        "h": 44,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "Ordinary test",
+        "x": 559,
+        "y": 320,
+        "w": 249,
+        "h": 44,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "640",
+        "x": 824,
+        "y": 320,
+        "w": 84,
+        "h": 44,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 551,
+        "y": 365,
+        "w": 365,
+        "h": 50,
+        "fill": "DFF2EA"
+      },
+      {
+        "type": "text",
+        "text": "Held-out generator",
+        "x": 559,
+        "y": 372,
+        "w": 249,
+        "h": 44,
+        "size": 17,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "854",
+        "x": 824,
+        "y": 372,
+        "w": 84,
+        "h": 44,
+        "size": 17,
+        "color": "00796B",
+        "bold": true
+      }
+    ]
+  },
+  {
+    "stage": "NEW EXPERIMENTS / CONSISTENCY AUDIT",
+    "title": "The old pipeline struggled on the newer images",
+    "subtitle": "Re-ran the saved original model without retraining it.",
+    "notes": "Same-image evaluation notebook and original report. The old full GLM's original .9819 AUROC and newer .606/.599 are on different datasets; the contrast diagnoses limited transfer, not a training trajectory. Cached every branch's outputs and aligned predictions to the same final image identities. Compared saved AI Shield, original CF and fine-tuned CF; saved disagreement tables. JPEG/resize robustness remains pending. The audit does not establish a single cause for the distribution shift.",
+    "links": [
+      [
+        "Comparison notebook",
+        "https://colab.research.google.com/drive/10jl7g0qknxLUCGF1VddbqbVf43oef4oD"
+      ]
+    ],
+    "items": [
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 169,
+        "w": 278,
+        "h": 239,
+        "fill": "F2F6F5"
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 169,
+        "w": 4,
+        "h": 239,
+        "fill": "00796B"
+      },
+      {
+        "type": "text",
+        "text": "Original benchmark",
+        "x": 60,
+        "y": 181,
+        "w": 246,
+        "h": 50,
+        "size": 21,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Tiny-GenImage fusion test\n\nAUROC 0.9819\n\nStrong original result.",
+        "x": 60,
+        "y": 241,
+        "w": 246,
+        "h": 159,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 341,
+        "y": 169,
+        "w": 278,
+        "h": 239,
+        "fill": "F2F6F5"
+      },
+      {
+        "type": "rect",
+        "x": 341,
+        "y": 169,
+        "w": 4,
+        "h": 239,
+        "fill": "C84760"
+      },
+      {
+        "type": "text",
+        "text": "New ordinary test",
+        "x": 357,
+        "y": 181,
+        "w": 246,
+        "h": 50,
+        "size": 21,
+        "color": "C84760",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Dataset v1: 640 images\n\nAUROC ~0.606\n\nWeak transfer.",
+        "x": 357,
+        "y": 241,
+        "w": 246,
+        "h": 159,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 638,
+        "y": 169,
+        "w": 278,
+        "h": 239,
+        "fill": "F2F6F5"
+      },
+      {
+        "type": "rect",
+        "x": 638,
+        "y": 169,
+        "w": 4,
+        "h": 239,
+        "fill": "C84760"
+      },
+      {
+        "type": "text",
+        "text": "Held-out generator",
+        "x": 654,
+        "y": 181,
+        "w": 246,
+        "h": 50,
+        "size": 21,
+        "color": "C84760",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "GPT Image 2 evaluation\n\nAUROC ~0.599\n\nWeak transfer here too.",
+        "x": 654,
+        "y": 241,
+        "w": 246,
+        "h": 159,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 449,
+        "w": 872,
+        "h": 40,
+        "fill": "DFF2EA"
+      },
+      {
+        "type": "text",
+        "text": "Test a stronger detector on these same images: Community Forensics.",
+        "x": 56,
+        "y": 454,
+        "w": 848,
+        "h": 30,
+        "size": 17,
+        "color": "00796B",
+        "bold": true
+      }
+    ]
+  },
+  {
+    "stage": "NEW EXPERIMENTS / COMMUNITY FORENSICS",
+    "title": "Adapted Community Forensics in two stages",
+    "subtitle": "Started from the published OwensLab/commfor-model-384 checkpoint.",
+    "notes": "CF training notebook: pretrained validation AUROC 0.8780; head-only fine-tuning for three epochs reached 0.9804; unfreezing the final two transformer blocks, normalization and head for three more epochs reached 0.9870. Checkpoint selection and thresholds used validation data. This adapted an existing published model. The model revision, preprocessing and source files are recorded in the experiment manifest.",
+    "links": [
+      [
+        "CF training notebook",
+        "https://colab.research.google.com/drive/1q5CB7k9fdY9ylfqMDQgClVl4k_ogNJef"
+      ]
+    ],
+    "items": [
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 164,
+        "w": 872,
+        "h": 74,
+        "fill": "F2F6F5"
+      },
+      {
+        "type": "text",
+        "text": "Pretrained baseline",
+        "x": 60,
+        "y": 177,
+        "w": 348,
+        "h": 40,
+        "size": 22,
+        "color": "172C2B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "No project fine-tuning",
+        "x": 424,
+        "y": 182,
+        "w": 318,
+        "h": 40,
+        "size": 17,
+        "color": "546966",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "0.8780",
+        "x": 763,
+        "y": 176,
+        "w": 140,
+        "h": 47,
+        "size": 29,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 251,
+        "w": 872,
+        "h": 74,
+        "fill": "F2F6F5"
+      },
+      {
+        "type": "text",
+        "text": "Stage 1: classifier head",
+        "x": 60,
+        "y": 264,
+        "w": 348,
+        "h": 40,
+        "size": 22,
+        "color": "172C2B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "3 epochs; backbone fixed",
+        "x": 424,
+        "y": 269,
+        "w": 318,
+        "h": 40,
+        "size": 17,
+        "color": "546966",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "0.9804",
+        "x": 763,
+        "y": 263,
+        "w": 140,
+        "h": 47,
+        "size": 29,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 338,
+        "w": 872,
+        "h": 74,
+        "fill": "DFF2EA"
+      },
+      {
+        "type": "text",
+        "text": "Stage 2: final blocks",
+        "x": 60,
+        "y": 351,
+        "w": 348,
+        "h": 40,
+        "size": 22,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "3 epochs; last 2 blocks + head",
+        "x": 424,
+        "y": 356,
+        "w": 318,
+        "h": 40,
+        "size": 17,
+        "color": "546966",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "0.9870",
+        "x": 763,
+        "y": 350,
+        "w": 140,
+        "h": 47,
+        "size": 29,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Right column: validation AUROC. Final test images did not choose the checkpoint.",
+        "x": 46,
+        "y": 416,
+        "w": 870,
+        "h": 28,
+        "size": 16,
+        "color": "546966",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 449,
+        "w": 872,
+        "h": 40,
+        "fill": "DFF2EA"
+      },
+      {
+        "type": "text",
+        "text": "Selected the Stage-2 checkpoint, then evaluated on the two reserved test sets.",
+        "x": 56,
+        "y": 454,
+        "w": 848,
+        "h": 30,
+        "size": 17,
+        "color": "00796B",
+        "bold": true
+      }
+    ]
+  },
+  {
+    "stage": "NEW EXPERIMENTS / FINAL COMPARISON",
+    "title": "CF alone beat the old system and the new fusion",
+    "subtitle": "Same final images for every row. Higher AUROC means better ranking.",
+    "notes": "All four models were evaluated on the same Dataset v1 final images. Fine-tuned CF accuracy was 95.16% on the ordinary test and 96.60% on the GPT Image 2 evaluation. The new fusion used CF, calibrated EfficientNet and FaceGate/OpenForensics with a new logistic regression. It excluded the VAE and did not reuse the original Phase-3 GLM. Its AUROC was slightly below CF alone on both sets; statistical significance of that difference was not established. Qwen Image 2 recall declined slightly after CF fine-tuning, so improvement was not uniform.",
+    "links": [
+      [
+        "Same-image comparison",
+        "https://colab.research.google.com/drive/10jl7g0qknxLUCGF1VddbqbVf43oef4oD"
+      ],
+      [
+        "New fusion study",
+        "https://colab.research.google.com/drive/1Kus5at9casCE1rSVYUSZbEeiZpvNCkOE"
+      ]
+    ],
+    "items": [
+      {
+        "type": "text",
+        "text": "Detector",
+        "x": 52,
+        "y": 157,
+        "w": 474,
+        "h": 40,
+        "size": 14,
+        "color": "546966",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Ordinary test",
+        "x": 542,
+        "y": 157,
+        "w": 175,
+        "h": 40,
+        "size": 14,
+        "color": "546966",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "GPT Image 2",
+        "x": 733,
+        "y": 157,
+        "w": 175,
+        "h": 40,
+        "size": 14,
+        "color": "546966",
+        "bold": true
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 197,
+        "w": 872,
+        "h": 1,
+        "fill": "DCE5E2"
+      },
+      {
+        "type": "text",
+        "text": "Old AI Shield full fusion",
+        "x": 52,
+        "y": 210,
+        "w": 474,
+        "h": 43,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "~0.606",
+        "x": 542,
+        "y": 210,
+        "w": 175,
+        "h": 43,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "~0.599",
+        "x": 733,
+        "y": 210,
+        "w": 175,
+        "h": 43,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "Original CF",
+        "x": 52,
+        "y": 261,
+        "w": 474,
+        "h": 43,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "0.8860",
+        "x": 542,
+        "y": 261,
+        "w": 175,
+        "h": 43,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "0.9555",
+        "x": 733,
+        "y": 261,
+        "w": 175,
+        "h": 43,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "CF + older forensic branches",
+        "x": 52,
+        "y": 312,
+        "w": 474,
+        "h": 43,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "0.9854",
+        "x": 542,
+        "y": 312,
+        "w": 175,
+        "h": 43,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "0.9936",
+        "x": 733,
+        "y": 312,
+        "w": 175,
+        "h": 43,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 356,
+        "w": 872,
+        "h": 49,
+        "fill": "DFF2EA"
+      },
+      {
+        "type": "text",
+        "text": "Fine-tuned CF alone",
+        "x": 52,
+        "y": 363,
+        "w": 474,
+        "h": 43,
+        "size": 17,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "0.9884",
+        "x": 542,
+        "y": 363,
+        "w": 175,
+        "h": 43,
+        "size": 17,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "0.9946",
+        "x": 733,
+        "y": 363,
+        "w": 175,
+        "h": 43,
+        "size": 17,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Fine-tuned CF accuracy: 95.16% ordinary test; 96.60% held-out evaluation.",
+        "x": 46,
+        "y": 418,
+        "w": 870,
+        "h": 28,
+        "size": 17,
+        "color": "546966",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 449,
+        "w": 872,
+        "h": 40,
+        "fill": "DFF2EA"
+      },
+      {
+        "type": "text",
+        "text": "Selected CF alone. The second fusion did not improve either AUROC.",
+        "x": 56,
+        "y": 454,
+        "w": 848,
+        "h": 30,
+        "size": 17,
+        "color": "00796B",
+        "bold": true
+      }
+    ]
+  },
+  {
+    "stage": "CURRENT DETECTOR / MODEL DECISIONS",
+    "title": "What stays in the current pipeline",
+    "subtitle": "The original models remain documented experiments; CF is the selected detector.",
+    "notes": "The current backend runs CF alone. Previous detectors and the semantic attention head remain historical experiments. The default validation max-F1 threshold is 0.6339887976646423; the low-FPR alternative is 0.7482541799545288. Fixed preparation: frame 0, EXIF orientation, RGB, shorter-side resize 440 with bilinear antialiasing, center crop 384, ImageNet normalization, float32. The fine-tuned best.pt SHA-256 begins 51532d28 and is different from the pretrained and repository-root files. Six saved validation images matched standalone and live HTTP outputs within tolerance. These are implementation checks, not a new accuracy benchmark. SDAIE was discussed but not implemented.",
+    "links": [
+      [
+        "Freeze notebook",
+        "https://colab.research.google.com/drive/1x1PmNrAi1RffEsunQq52HzGmjpY1oj0G"
+      ]
+    ],
+    "items": [
+      {
+        "type": "text",
+        "text": "Selected",
+        "x": 44,
+        "y": 159,
+        "w": 404,
+        "h": 35,
+        "size": 23,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Fine-tuned CF: one visual AI score.\n\nSame checkpoint, preprocessing,\nand validation max-F1 cutoff ~0.634.\n\nSix reference images reproduce the\nsaved predictions through the API.",
+        "x": 44,
+        "y": 209,
+        "w": 413,
+        "h": 207,
+        "size": 19,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "Archived / paused",
+        "x": 510,
+        "y": 159,
+        "w": 406,
+        "h": 35,
+        "size": 23,
+        "color": "C84760",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "EfficientNet, VAE and face branch.\nCustom semantic attention head.\nOriginal GLM and newer fusion.\n\nThese explain the research journey;\nthey are not active in the new backend.",
+        "x": 510,
+        "y": 209,
+        "w": 406,
+        "h": 207,
+        "size": 19,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 449,
+        "w": 872,
+        "h": 40,
+        "fill": "DFF2EA"
+      },
+      {
+        "type": "text",
+        "text": "Freeze = hold the chosen version fixed while building the rest of AI Shield.",
+        "x": 56,
+        "y": 454,
+        "w": 848,
+        "h": 30,
+        "size": 17,
+        "color": "00796B",
+        "bold": true
+      }
+    ]
+  },
+  {
+    "stage": "NEW SOFTWARE / EXIF METADATA",
+    "title": "EXIF: read what the original file records",
+    "subtitle": "Implemented with ExifTool; this component needs no model training.",
+    "notes": "Sources: src/ai_shield_provenance.py and docs/PROVENANCE.md. ExifTool reads metadata from the original file. Conflicting tag values remain visible; embedded dates and filesystem dates are separate. GPS is opt-in. Metadata values are unverified recorded claims. Missing tags imply unknown origin. Camera tags or Photoshop tags do not independently establish authenticity or AI generation. The shown report is illustrative, not the output of a particular tested image.",
+    "links": [
+      [
+        "Implementation record",
+        "https://app.notion.com/p/3d4b28a9701681b08a4ecf17f2c617d5"
+      ]
+    ],
+    "items": [
+      {
+        "type": "text",
+        "text": "Extracted fields",
+        "x": 44,
+        "y": 159,
+        "w": 397,
+        "h": 34,
+        "size": 22,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Camera / device information\nEditing software\nEmbedded creation / modification dates\nGPS, only when explicitly requested",
+        "x": 44,
+        "y": 210,
+        "w": 420,
+        "h": 151,
+        "size": 19,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "The original upload is inspected before\nthe detector resizes or crops the image.",
+        "x": 44,
+        "y": 385,
+        "w": 420,
+        "h": 64,
+        "size": 18,
+        "color": "546966",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 510,
+        "y": 162,
+        "w": 406,
+        "h": 242,
+        "fill": "F2F6F5"
+      },
+      {
+        "type": "text",
+        "text": "Illustrative metadata report",
+        "x": 527,
+        "y": 175,
+        "w": 370,
+        "h": 35,
+        "size": 20,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Camera: not recorded\nSoftware: Adobe Photoshop\nCreation time: not recorded\nOrigin: unknown",
+        "x": 527,
+        "y": 227,
+        "w": 370,
+        "h": 147,
+        "size": 20,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 449,
+        "w": 872,
+        "h": 40,
+        "fill": "DFF2EA"
+      },
+      {
+        "type": "text",
+        "text": "No metadata means unknown. An editing-software tag does not establish AI generation.",
+        "x": 56,
+        "y": 454,
+        "w": 848,
+        "h": 30,
+        "size": 17,
+        "color": "00796B",
+        "bold": true
+      }
+    ]
+  },
+  {
+    "stage": "NEW SOFTWARE / C2PA PROVENANCE",
+    "title": "C2PA: verify signed creation and editing records",
+    "subtitle": "Uses the C2PA SDK to check available embedded credentials.",
+    "notes": "Sources: local provenance module and tests. Signature, image integrity and signer trust are independent checks. A signed manifest can retain a valid signature after image pixels are changed, while the asset-binding check fails. Trust anchors are configured independently of uploaded files. States include validated, untrusted, failed, incomplete, absent, remote reference, unsupported, unavailable and error. Verification is offline: remote manifests and live revocation responses are not retrieved. Valid credentials do not prove scene truth or human creation.",
+    "links": [
+      [
+        "Provenance implementation",
+        "https://app.notion.com/p/3d4b28a9701681b08a4ecf17f2c617d5"
+      ]
+    ],
+    "items": [
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 166,
+        "w": 278,
+        "h": 211,
+        "fill": "F2F6F5"
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 166,
+        "w": 4,
+        "h": 211,
+        "fill": "00796B"
+      },
+      {
+        "type": "text",
+        "text": "1  Signature",
+        "x": 60,
+        "y": 178,
+        "w": 246,
+        "h": 50,
+        "size": 21,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Has the signed record\nbeen altered?\n\nCheck the cryptographic\nsignature.",
+        "x": 60,
+        "y": 238,
+        "w": 246,
+        "h": 131,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 341,
+        "y": 166,
+        "w": 278,
+        "h": 211,
+        "fill": "F2F6F5"
+      },
+      {
+        "type": "rect",
+        "x": 341,
+        "y": 166,
+        "w": 4,
+        "h": 211,
+        "fill": "00796B"
+      },
+      {
+        "type": "text",
+        "text": "2  Image binding",
+        "x": 357,
+        "y": 178,
+        "w": 246,
+        "h": 50,
+        "size": 21,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Does that record still\nmatch this image?\n\nDetect changes to the\nsigned image content.",
+        "x": 357,
+        "y": 238,
+        "w": 246,
+        "h": 131,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 638,
+        "y": 166,
+        "w": 278,
+        "h": 211,
+        "fill": "F2F6F5"
+      },
+      {
+        "type": "rect",
+        "x": 638,
+        "y": 166,
+        "w": 4,
+        "h": 211,
+        "fill": "00796B"
+      },
+      {
+        "type": "text",
+        "text": "3  Signer trust",
+        "x": 654,
+        "y": 178,
+        "w": 246,
+        "h": 50,
+        "size": 21,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Do we trust the signer\nunder our policy?\n\nA valid signature alone\ndoes not establish trust.",
+        "x": 654,
+        "y": 238,
+        "w": 246,
+        "h": 131,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "Reports absent, untrusted and failed states separately. Verification currently runs offline.",
+        "x": 46,
+        "y": 403,
+        "w": 870,
+        "h": 36,
+        "size": 17,
+        "color": "546966",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 449,
+        "w": 872,
+        "h": 40,
+        "fill": "DFF2EA"
+      },
+      {
+        "type": "text",
+        "text": "Signed history is additional evidence; it does not prove that a scene really happened.",
+        "x": 56,
+        "y": 454,
+        "w": 848,
+        "h": 30,
+        "size": 17,
+        "color": "00796B",
+        "bold": true
+      }
+    ]
+  },
+  {
+    "stage": "CURRENT IMPLEMENTATION / COMBINED BACKEND",
+    "title": "One upload now runs detection and provenance",
+    "subtitle": "FastAPI connects the frozen model and evidence extraction locally.",
+    "notes": "Sources: backend/app.py, backend/pipeline.py, backend/detector.py and docs/BACKEND.md. The original upload is inspected for provenance before CF preprocessing. /analyze returns detection and evidence; /health reports readiness and model identity. Metadata does not alter CF's score. The score is not claimed to be a calibrated probability. The local API validates JPEG/PNG/WebP, limits files to 25 MiB and images to 20 million pixels, limits concurrency and removes temporary uploads. Recorded verification passed 38 automated tests and six real HTTP reference-image checks. Public deployment still needs server-level native-processing timeouts and resource limits.",
+    "links": [
+      [
+        "Backend progress",
+        "https://app.notion.com/p/3d4b28a9701681b08a4ecf17f2c617d5"
+      ],
+      [
+        "Detector verification",
+        "https://colab.research.google.com/drive/1x1PmNrAi1RffEsunQq52HzGmjpY1oj0G"
+      ]
+    ],
+    "items": [
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 245,
+        "w": 160,
+        "h": 88,
+        "fill": "F2F6F5"
+      },
+      {
+        "type": "text",
+        "text": "Original\nimage upload",
+        "x": 57,
+        "y": 261,
+        "w": 134,
+        "h": 65,
+        "size": 20,
+        "color": "172C2B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": ">",
+        "x": 218,
+        "y": 265,
+        "w": 30,
+        "h": 40,
+        "size": 28,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "rect",
+        "x": 270,
+        "y": 171,
+        "w": 369,
+        "h": 98,
+        "fill": "DFF2EA"
+      },
+      {
+        "type": "text",
+        "text": "Frozen CF detector",
+        "x": 285,
+        "y": 181,
+        "w": 335,
+        "h": 34,
+        "size": 21,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Prepared pixels -> AI score",
+        "x": 285,
+        "y": 225,
+        "w": 335,
+        "h": 31,
+        "size": 18,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 270,
+        "y": 302,
+        "w": 369,
+        "h": 98,
+        "fill": "F2F6F5"
+      },
+      {
+        "type": "text",
+        "text": "ExifTool + C2PA",
+        "x": 285,
+        "y": 312,
+        "w": 335,
+        "h": 34,
+        "size": 21,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Original bytes -> evidence",
+        "x": 285,
+        "y": 356,
+        "w": 335,
+        "h": 31,
+        "size": 18,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": ">",
+        "x": 655,
+        "y": 265,
+        "w": 30,
+        "h": 40,
+        "size": 28,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "rect",
+        "x": 706,
+        "y": 211,
+        "w": 210,
+        "h": 158,
+        "fill": "DFF2EA"
+      },
+      {
+        "type": "text",
+        "text": "Combined report",
+        "x": 719,
+        "y": 226,
+        "w": 184,
+        "h": 61,
+        "size": 22,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Detection result\nMetadata details\nCredential checks",
+        "x": 719,
+        "y": 288,
+        "w": 184,
+        "h": 78,
+        "size": 17,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 449,
+        "w": 872,
+        "h": 40,
+        "fill": "DFF2EA"
+      },
+      {
+        "type": "text",
+        "text": "38 automated tests passed; 6 saved images also matched through the upload API.",
+        "x": 56,
+        "y": 454,
+        "w": 848,
+        "h": 30,
+        "size": 17,
+        "color": "00796B",
+        "bold": true
+      }
+    ]
+  },
+  {
+    "stage": "CURRENT STATUS / NEXT WORK",
+    "title": "Built locally; the new website is the next product step",
+    "subtitle": "The existing Hugging Face demo still serves the older fusion system.",
+    "notes": "Current local implementation includes frozen CF inference, EXIF/C2PA evidence reporting and a combined FastAPI service. The hosted Hugging Face demo remains the old fusion. At the last recorded implementation state, provenance had a local unpushed commit and backend changes were uncommitted. No Oracle deployment or complete ARM runtime validation has been completed. JPEG/resize robustness and evaluation on artwork, renders and edited photos remain next work. Context checks and video are later extensions.",
+    "links": [
+      [
+        "Project status",
+        "https://app.notion.com/p/3d4b28a9701681b08a4ecf17f2c617d5"
+      ],
+      [
+        "Repository",
+        "https://github.com/Abdulrahmansoliman/AI-SHEILD-MINI-CAPSTONE"
+      ]
+    ],
+    "items": [
+      {
+        "type": "text",
+        "text": "Implemented",
+        "x": 44,
+        "y": 159,
+        "w": 413,
+        "h": 35,
+        "size": 23,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "Selected and verified CF detector\nEXIF extraction + C2PA verification\nCombined upload API\nAutomated tests and saved artifacts",
+        "x": 44,
+        "y": 212,
+        "w": 413,
+        "h": 166,
+        "size": 20,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "text",
+        "text": "Next",
+        "x": 510,
+        "y": 159,
+        "w": 406,
+        "h": 35,
+        "size": 23,
+        "color": "00796B",
+        "bold": true
+      },
+      {
+        "type": "text",
+        "text": "JPEG / resize robustness tests\nArtwork, renders and edited-photo tests\nCommit / publish the backend\nBuild and deploy the upload website",
+        "x": 510,
+        "y": 212,
+        "w": 406,
+        "h": 166,
+        "size": 20,
+        "color": "172C2B",
+        "bold": false
+      },
+      {
+        "type": "rect",
+        "x": 44,
+        "y": 405,
+        "w": 872,
+        "h": 1,
+        "fill": "DCE5E2"
+      },
+      {
+        "type": "text",
+        "text": "Later: image/claim consistency checks and short-video support.",
+        "x": 44,
+        "y": 428,
+        "w": 872,
+        "h": 49,
+        "size": 20,
+        "color": "546966",
+        "bold": false
+      }
+    ]
+  }
+]

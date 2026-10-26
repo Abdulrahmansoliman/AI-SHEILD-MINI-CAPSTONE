@@ -1,1 +1,5 @@
 src/ai_shield_cf_inference.py text eol=lf
+
+# Preserve document bytes and avoid text diffs for generated deliverables.
+*.pdf binary
+*.pptx binary

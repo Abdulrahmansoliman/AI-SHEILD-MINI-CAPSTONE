@@ -1,0 +1,138 @@
+{
+  "title": "AI Shield",
+  "author": "Abdelrahman Soliman",
+  "slides": [
+    {
+      "title": "AI Shield",
+      "content": "From image detection to evidence-aware verification.\nAbdelrahman Soliman | Capstone discussion.\nA research and engineering journey: build a detector, test its limits, improve it, and turn the result into a usable system.",
+      "visual": "Project identity with a restrained visual of an image being inspected. No dates.",
+      "notes": "Introduce the long-term ambition: help people assess AI-generated or manipulated media. Start with images before attempting videos. This presentation follows milestones rather than calendar dates."
+    },
+    {
+      "title": "The problem: detection is only one part of verification",
+      "content": "Research question: Can I detect AI-generated images reliably when the image source or generator changes?\nProduct question: Can I show the available evidence about an image's origin and editing history?\nAn AI score is a prediction. Metadata and signed credentials are additional evidence, not automatic proof.",
+      "visual": "Two complementary outputs: visual AI detection, and recorded origin/editing evidence.",
+      "notes": "Distinguish AI generation, face manipulation, ordinary photo editing, and factual truth. The capstone does not claim to prove whether a scene actually happened."
+    },
+    {
+      "title": "How the project evolved",
+      "content": "1. Face-manipulation prototype.\n2. Broader forensic signals.\n3. Semantic attention and learned fusion.\n4. A harder multi-generator benchmark.\n5. Fine-tuned Community Forensics.\n6. A verified detector plus a local provenance service.",
+      "visual": "A clear milestone timeline with six stages, using stage labels rather than dates.",
+      "notes": "Explain the actual development order. OpenForensics face detection came first, even though the written report presents the later general-image branch before returning to face routing. Each stage answered a limitation discovered in the preceding stage."
+    },
+    {
+      "title": "First prototype: a working face detector",
+      "content": "Trained an EfficientNetV2-B0 model on OpenForensics, a face-manipulation dataset.\nValidation accuracy: 96.51%.\nHeld-out test accuracy: 85.77%.\nBuilt an upload demo to make predictions inspectable.\nLesson: strong validation performance did not guarantee broader reliability, and faces were too narrow for the final goal.",
+      "visual": "Compare the two accuracy values in a simple labeled chart; identify this as the early OpenForensics experiment.",
+      "notes": "This was the first trained model, not a general solution for all synthetic images. OpenForensics validation ROC-AUC was 0.9824 and held-out test ROC-AUC was 0.9387. Do not mix these figures with the later Tiny-GenImage or Dataset v1 experiments."
+    },
+    {
+      "title": "Broader forensic evidence: several signals, tested separately",
+      "content": "EfficientNet-B0: learned visual artifacts using Tiny-GenImage.\nReal-only VAE: tried to flag images that were hard to reconstruct; built its encoder, decoder and training loop.\nFaceGate: applied the OpenForensics branch only when a valid face was present.\nCalibrated the classifier scores and cached outputs for repeatable comparisons.\nThe VAE was weak alone (AUROC about 0.470), and a naive weighted blend hurt performance.",
+      "visual": "Three clearly labeled branches with a small applicability gate on the face branch. Explain VAE as reconstruction-based anomaly detection.",
+      "notes": "The broader dataset used a balanced 28,000-image training subset and 7,000 original validation images. The VAE's failure is a result, not a hidden omission. A face score was marked inapplicable when no valid face existed. Calibration adjusted score interpretation without retraining the classifier."
+    },
+    {
+      "title": "Semantic layer: learning relationships between image patches",
+      "content": "Used a pretrained Vision Transformer (ViT), which represents an image as small patches.\nBuilt a custom attention head so patches could contribute to a whole-image prediction.\nImplemented multi-head attention, refinement and attention pooling.\nThe backbone stayed frozen while 856,578 custom-head parameters were trained.\nThis was visual modeling; caption checks and human-like reasoning were not established.",
+      "visual": "Patch tokens -> custom attention -> pooled image score. A compact diagram, not a generic AI illustration.",
+      "notes": "This is an important original ML contribution. The reported system had roughly 87.2 million total parameters. Attention was intended to learn relationships among regions, but attention maps do not prove causal explanations or an ability to reason about hands, lighting or world facts."
+    },
+    {
+      "title": "First combined system: learned fusion improved its benchmark",
+      "content": "Aligned the forensic and semantic outputs for the same images.\nTrained a GLM (logistic regression), which learned how to combine 17 features: 11 forensic and 6 semantic.\nOriginal Tiny-GenImage fusion test: 1,400 images.\nFull fusion AUROC: 0.9819; accuracy: 94.07%; F1: 0.9406.\nAgainst calibrated EfficientNet, it caught 54 additional generated images with one additional false positive.",
+      "visual": "A simple architecture leading into a learned combiner, plus the clearly labeled original-test result. Define AUROC: ranking performance, 0.5 chance and 1.0 perfect; it is not percentage accuracy.",
+      "notes": "Original fusion splits were 4,200 train, 1,400 validation, 1,400 test. The original full GLM correctly classified 1,317 of 1,400 examples. It used a validation threshold around 0.42. The old fusion's results must not be presented as the performance of the current CF detector, or compared directly with scores from a different test set."
+    },
+    {
+      "title": "The turning point: the original model struggled on newer data",
+      "content": "Re-ran the saved original AI Shield pipeline without retraining it.\nCompared it with Community Forensics on exactly the same new final images.\nOld full fusion AUROC: about 0.606 on the ordinary test and 0.599 on the GPT Image 2 test.\nSaved per-image predictions and disagreement tables.\nLesson: success on the original benchmark did not carry over to this newer collection.",
+      "visual": "A contrast between 'original benchmark: strong' and 'new benchmark: weak', clearly marked as different datasets. Do not draw a single learning curve connecting the two datasets.",
+      "notes": "This audit motivated a change in direction. The old detector can learn patterns tied to its original image sources or generators. This is a possible explanation to investigate, not a proven diagnosis of every error. The comparison included original and fine-tuned Community Forensics."
+    },
+    {
+      "title": "A more controlled benchmark: Dataset v1",
+      "content": "5,124 images, balanced between 2,562 real and 2,562 generated.\nFixed splits: 2,990 training | 640 validation | 640 ordinary test | 854 unseen-generator evaluation.\nFive generator families supported development.\nGPT Image 2 was excluded from our fine-tuning and validation, then used for a separate held-out-generator test.\nRecorded image identities, split membership and file hashes.",
+      "visual": "Proportionate split bar with exact counts, plus a separate held-out GPT Image 2 lane.",
+      "notes": "The development generators included FLUX.2 max, GLM-Image, Seedream 5, Nano Banana 2, and Qwen Image 2. 'Unseen' refers to exclusion from this project's fine-tuning and model selection; it does not independently prove that no pretrained model ever encountered related content."
+    },
+    {
+      "title": "Fine-tuning Community Forensics in two stages",
+      "content": "Started from the published Community Forensics model and measured its baseline first.\nStage 1: trained only the classifier head for three epochs.\nStage 2: trained the final two transformer blocks, final normalization and classifier head for three epochs.\nValidation AUROC: 0.8780 baseline -> 0.9804 after Stage 1 -> 0.9870 after Stage 2.\nSelected the checkpoint and decision thresholds using validation results.",
+      "visual": "A three-point validation chart and a compact two-stage training diagram.",
+      "notes": "Reused the pretrained visual backbone; did not claim to invent Community Forensics. Important engineering fixes included handling the first frame of MPO-style JPEG files and replacing a corrupted cached pretrained checkpoint with a verified download. Inputs use exact image preparation with a 384-pixel crop. Keep detailed hyperparameters in notes."
+    },
+    {
+      "title": "Fine-tuned CF became the strongest detector on Dataset v1",
+      "content": "All rows below use the same new final evaluation sets.\nModel | Ordinary test AUROC | GPT Image 2 AUROC\nOld AI Shield full fusion | 0.606 | 0.599\nOriginal Community Forensics | 0.8860 | 0.9555\nFine-tuned Community Forensics | 0.9884 | 0.9946\nFine-tuned accuracy: 95.16% ordinary test; 96.60% held-out-generator test.\nOrdinary-test real-image false-positive rate: 20.63% original CF -> 3.75% fine-tuned CF, at their validation-selected max-F1 operating points.",
+      "visual": "A readable grouped bar chart for AUROC with data labels and a small false-positive callout. Use a 0-to-1 AUROC scale. Never label AUROC as accuracy.",
+      "notes": "These are results on the project's Dataset v1, not a universal performance guarantee. Fine-tuning was not a uniform win for every subgroup: Qwen Image 2 recall fell slightly, about 98.4% to 96.9%. Further source, category and transformation tests remain necessary."
+    },
+    {
+      "title": "A second fusion experiment did not earn its complexity",
+      "content": "Tested fine-tuned CF + calibrated EfficientNet + FaceGate/OpenForensics using a new logistic-regression combiner.\nModel | Ordinary test AUROC | GPT Image 2 AUROC\nFine-tuned CF alone | 0.9884 | 0.9946\nNew fusion | 0.9854 | 0.9936\nThe combination was slightly worse on both sets.\nDecision: keep CF alone as the current detector and stop adding models without evidence of improvement.",
+      "visual": "A precise two-row result table or paired comparison with a clear 'Selected: CF alone' annotation. Do not exaggerate small differences with misleading axes.",
+      "notes": "This is a different fusion experiment from the original 17-feature CS156 GLM. The VAE was not included and the old Phase-3 GLM was not reused. The choice favors the measured result and a simpler inference pipeline, not complexity for its own sake."
+    },
+    {
+      "title": "Freezing the detector made the application reproducible",
+      "content": "Frozen = keep the exact saved weights, preprocessing and decision threshold fixed.\nA SHA-256 hash, a digital fingerprint, identifies the fine-tuned best.pt file.\nFixed preprocessing: orientation -> RGB -> resize -> center crop -> normalization.\nDefault threshold about 0.634: selected for the best validation F1, a balance of precision and recall.\nSix fixed reference images reproduced saved scores within tolerance and kept identical classifications through the API.",
+      "visual": "A compact checklist of model identity, preprocessing, threshold and six reference-image checks.",
+      "notes": "This is implementation parity, not a fresh accuracy study. Precise settings: frame 0, EXIF transpose, RGB, resize shorter side 440 with bilinear antialiasing, center crop 384, ImageNet normalization, float32. Default threshold 0.6339887976646423. The fine-tuned checkpoint hash starts 51532d28; it differs from the pretrained checkpoint hash. Neither full hash nor dates need to appear on the slide."
+    },
+    {
+      "title": "Added recorded provenance and connected a local backend",
+      "content": "One original upload now produces two separate outputs.\nCF detector -> AI-generation score.\nExifTool + C2PA -> available camera/software/date details and checks of signed creation/editing records.\nFastAPI backend: the Python service that runs both branches and returns one report.\n38 automated tests passed, including valid, untrusted and tampered credential cases; six original images also passed live HTTP checks.\nMissing metadata = unknown. Photoshop does not prove AI. C2PA signature, image integrity and signer trust are separate.",
+      "visual": "Original image splitting into CF and provenance branches, then joining into a combined report. Label this 'implemented locally'.",
+      "notes": "Metadata extraction is software, not a newly trained provenance model. Evidence does not change CF's score. The implementation preserves original bytes, keeps embedded and filesystem dates separate, makes GPS opt-in, limits uploads, handles errors and deletes temporary files. C2PA verification is offline: remote manifests and live revocation responses are not fetched. Even trusted signed claims do not prove scene truth. No SDAIE detector was added. Local timing was about 0.9 seconds per image on six CPU fixtures, not a production throughput benchmark."
+    },
+    {
+      "title": "Where I am now, and what I need to validate next",
+      "content": "WORKING LOCALLY: fine-tuned CF, reproducible inference, EXIF/C2PA reporting, and one combined upload API.\nNOT YET PUBLIC: the standalone website and the new backend; the hosted Hugging Face demo still uses the older fusion system.\nNEXT: JPEG/resize robustness tests; failure analysis on human artwork, designs, 3D renders and edited photos; publish the intended code and build the website.\nLATER: image/claim consistency checks and short-video support.\nDiscussion: Which remaining evaluation would make this capstone most convincing? How should uncertain or conflicting evidence be shown?",
+      "visual": "Clearly distinguish completed, next, and later work. End with the two discussion questions and small clickable project links.",
+      "notes": "The provenance code has a local Git commit; backend changes are not yet committed/pushed. Do not claim Oracle deployment or ARM testing is complete. Hosting architecture is only proposed. The central contribution is the combination of custom modeling, controlled comparisons, documented negative findings, and a verified path from trained weights to usable evidence reporting."
+    }
+  ],
+  "sources": [
+    [
+      "Project overview",
+      "https://app.notion.com/p/3d4b28a9701681b08a4ecf17f2c617d5"
+    ],
+    [
+      "Implementation history",
+      "https://app.notion.com/p/3d4b28a97016815ba2a7ecfade37b97a"
+    ],
+    [
+      "Results and limitations",
+      "https://app.notion.com/p/3d4b28a97016818b9665e09a1fe873b1"
+    ],
+    [
+      "Dataset preparation",
+      "https://colab.research.google.com/drive/1JgyHuz_RPeWgQf4aemqB0DSry_SvWkPV"
+    ],
+    [
+      "CF fine-tuning",
+      "https://colab.research.google.com/drive/1q5CB7k9fdY9ylfqMDQgClVl4k_ogNJef"
+    ],
+    [
+      "Same-image baseline comparison",
+      "https://colab.research.google.com/drive/10jl7g0qknxLUCGF1VddbqbVf43oef4oD"
+    ],
+    [
+      "New fusion experiment",
+      "https://colab.research.google.com/drive/1Kus5at9casCE1rSVYUSZbEeiZpvNCkOE"
+    ],
+    [
+      "Detector freeze verification",
+      "https://colab.research.google.com/drive/1x1PmNrAi1RffEsunQq52HzGmjpY1oj0G"
+    ],
+    [
+      "Verified detector exports",
+      "https://drive.google.com/drive/folders/1i8fHQYF3hnp1BWJmwvb-MOK8-7WWmjlI"
+    ],
+    [
+      "GitHub repository (older published state)",
+      "https://github.com/Abdulrahmansoliman/AI-SHEILD-MINI-CAPSTONE"
+    ]
+  ]
+}

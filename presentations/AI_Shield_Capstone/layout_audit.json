@@ -1,0 +1,2928 @@
+[
+  {
+    "slide": 1,
+    "text": "CAPSTONE / RESEARCH AND ENGINEERING",
+    "box": [
+      44,
+      24,
+      800,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 1,
+    "text": "01 / 15",
+    "box": [
+      862,
+      24,
+      58,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 1,
+    "text": "AI Shield",
+    "box": [
+      44,
+      60,
+      872,
+      39.6
+    ],
+    "size": 30
+  },
+  {
+    "slide": 1,
+    "text": "AI SHIELD  /  ABDELRAHMAN SOLIMAN",
+    "box": [
+      44,
+      515,
+      400,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 1,
+    "text": "Project notes",
+    "box": [
+      565,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 1,
+    "text": "From image detection to\nevidence-aware verification",
+    "box": [
+      46,
+      141,
+      470,
+      83.52
+    ],
+    "size": 33
+  },
+  {
+    "slide": 1,
+    "text": "Abdelrahman Soliman",
+    "box": [
+      48,
+      270,
+      440,
+      27.4
+    ],
+    "size": 20
+  },
+  {
+    "slide": 1,
+    "text": "A project story: what I built, what failed,\nwhat improved, and where the work stands.",
+    "box": [
+      48,
+      311,
+      440,
+      46.92
+    ],
+    "size": 18
+  },
+  {
+    "slide": 1,
+    "text": "ONE IMAGE",
+    "box": [
+      574,
+      165,
+      300,
+      18.86
+    ],
+    "size": 13
+  },
+  {
+    "slide": 1,
+    "text": "AI-generation detection",
+    "box": [
+      595,
+      224,
+      275,
+      27.4
+    ],
+    "size": 20
+  },
+  {
+    "slide": 1,
+    "text": "Recorded origin and\nediting evidence",
+    "box": [
+      595,
+      302,
+      275,
+      51.8
+    ],
+    "size": 20
+  },
+  {
+    "slide": 1,
+    "text": "Research evidence, followed by a working local service.",
+    "box": [
+      48,
+      452,
+      850,
+      23.74
+    ],
+    "size": 17
+  },
+  {
+    "slide": 2,
+    "text": "RESEARCH QUESTION",
+    "box": [
+      44,
+      24,
+      800,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 2,
+    "text": "02 / 15",
+    "box": [
+      862,
+      24,
+      58,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 2,
+    "text": "Can the prediction survive a change in source?",
+    "box": [
+      44,
+      60,
+      872,
+      39.6
+    ],
+    "size": 30
+  },
+  {
+    "slide": 2,
+    "text": "The goal expanded from a classifier to an evidence-aware verification tool.",
+    "box": [
+      46,
+      111,
+      870,
+      20.08
+    ],
+    "size": 14
+  },
+  {
+    "slide": 2,
+    "text": "AI SHIELD  /  ABDELRAHMAN SOLIMAN",
+    "box": [
+      44,
+      515,
+      400,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 2,
+    "text": "Project notes",
+    "box": [
+      565,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 2,
+    "text": "01",
+    "box": [
+      44,
+      179,
+      270,
+      49.36
+    ],
+    "size": 38
+  },
+  {
+    "slide": 2,
+    "text": "Detect",
+    "box": [
+      44,
+      258,
+      266,
+      31.06
+    ],
+    "size": 23
+  },
+  {
+    "slide": 2,
+    "text": "Estimate whether an image shows visual evidence of AI generation.",
+    "box": [
+      44,
+      306,
+      266,
+      72.53999999999999
+    ],
+    "size": 19
+  },
+  {
+    "slide": 2,
+    "text": "02",
+    "box": [
+      344,
+      179,
+      270,
+      49.36
+    ],
+    "size": 38
+  },
+  {
+    "slide": 2,
+    "text": "Generalize",
+    "box": [
+      344,
+      258,
+      266,
+      31.06
+    ],
+    "size": 23
+  },
+  {
+    "slide": 2,
+    "text": "Test on new generators and image sources, not only familiar examples.",
+    "box": [
+      344,
+      306,
+      266,
+      72.53999999999999
+    ],
+    "size": 19
+  },
+  {
+    "slide": 2,
+    "text": "03",
+    "box": [
+      644,
+      179,
+      270,
+      49.36
+    ],
+    "size": 38
+  },
+  {
+    "slide": 2,
+    "text": "Explain evidence",
+    "box": [
+      644,
+      258,
+      266,
+      31.06
+    ],
+    "size": 23
+  },
+  {
+    "slide": 2,
+    "text": "Show available camera, editing and signed-history information.",
+    "box": [
+      644,
+      306,
+      266,
+      49.36
+    ],
+    "size": 19
+  },
+  {
+    "slide": 2,
+    "text": "An AI score is a prediction. Recorded history is separate evidence.",
+    "box": [
+      60,
+      451,
+      840,
+      23.74
+    ],
+    "size": 17
+  },
+  {
+    "slide": 3,
+    "text": "PROJECT JOURNEY",
+    "box": [
+      44,
+      24,
+      800,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 3,
+    "text": "03 / 15",
+    "box": [
+      862,
+      24,
+      58,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 3,
+    "text": "Six stages, each prompted by a limitation",
+    "box": [
+      44,
+      60,
+      872,
+      39.6
+    ],
+    "size": 30
+  },
+  {
+    "slide": 3,
+    "text": "Milestones show the development order without calendar dates.",
+    "box": [
+      46,
+      111,
+      870,
+      20.08
+    ],
+    "size": 14
+  },
+  {
+    "slide": 3,
+    "text": "AI SHIELD  /  ABDELRAHMAN SOLIMAN",
+    "box": [
+      44,
+      515,
+      400,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 3,
+    "text": "Build history",
+    "box": [
+      565,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 3,
+    "text": "Project notes",
+    "box": [
+      681,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 3,
+    "text": "1",
+    "box": [
+      48,
+      170,
+      30,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 3,
+    "text": "Face detector",
+    "box": [
+      100,
+      167,
+      260,
+      24.96
+    ],
+    "size": 18
+  },
+  {
+    "slide": 3,
+    "text": "A working prototype, but a narrow image domain.",
+    "box": [
+      374,
+      168,
+      534,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 3,
+    "text": "2",
+    "box": [
+      48,
+      219,
+      30,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 3,
+    "text": "Forensic branches",
+    "box": [
+      100,
+      216,
+      260,
+      24.96
+    ],
+    "size": 18
+  },
+  {
+    "slide": 3,
+    "text": "Broader visual signals, reconstruction and face routing.",
+    "box": [
+      374,
+      217,
+      534,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 3,
+    "text": "3",
+    "box": [
+      48,
+      268,
+      30,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 3,
+    "text": "Semantic + fusion",
+    "box": [
+      100,
+      265,
+      260,
+      24.96
+    ],
+    "size": 18
+  },
+  {
+    "slide": 3,
+    "text": "Custom patch attention and a learned score combiner.",
+    "box": [
+      374,
+      266,
+      534,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 3,
+    "text": "4",
+    "box": [
+      48,
+      317,
+      30,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 3,
+    "text": "Generalization audit",
+    "box": [
+      100,
+      314,
+      260,
+      24.96
+    ],
+    "size": 18
+  },
+  {
+    "slide": 3,
+    "text": "A newer benchmark exposed the original model's weakness.",
+    "box": [
+      374,
+      315,
+      534,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 3,
+    "text": "5",
+    "box": [
+      48,
+      366,
+      30,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 3,
+    "text": "Community Forensics",
+    "box": [
+      100,
+      363,
+      260,
+      24.96
+    ],
+    "size": 18
+  },
+  {
+    "slide": 3,
+    "text": "A stronger detector, selected by controlled comparison.",
+    "box": [
+      374,
+      364,
+      534,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 3,
+    "text": "6",
+    "box": [
+      48,
+      415,
+      30,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 3,
+    "text": "Provenance + service",
+    "box": [
+      100,
+      412,
+      260,
+      24.96
+    ],
+    "size": 18
+  },
+  {
+    "slide": 3,
+    "text": "Repeatable inference and a combined local upload API.",
+    "box": [
+      374,
+      413,
+      534,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 4,
+    "text": "STAGE 1 / FIRST PROTOTYPE",
+    "box": [
+      44,
+      24,
+      800,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 4,
+    "text": "04 / 15",
+    "box": [
+      862,
+      24,
+      58,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 4,
+    "text": "The first detector worked, but its scope was narrow",
+    "box": [
+      44,
+      60,
+      872,
+      39.6
+    ],
+    "size": 30
+  },
+  {
+    "slide": 4,
+    "text": "EfficientNetV2-B0 trained on OpenForensics face-manipulation images.",
+    "box": [
+      46,
+      111,
+      870,
+      20.08
+    ],
+    "size": 14
+  },
+  {
+    "slide": 4,
+    "text": "AI SHIELD  /  ABDELRAHMAN SOLIMAN",
+    "box": [
+      44,
+      515,
+      400,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 4,
+    "text": "Build history",
+    "box": [
+      565,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 4,
+    "text": "Results",
+    "box": [
+      681,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 4,
+    "text": "What I built",
+    "box": [
+      60,
+      173,
+      324,
+      23.74
+    ],
+    "size": 17
+  },
+  {
+    "slide": 4,
+    "text": "Training, evaluation and an image-upload demo for face manipulation.",
+    "box": [
+      60,
+      203.74,
+      324,
+      42.04
+    ],
+    "size": 16
+  },
+  {
+    "slide": 4,
+    "text": "What I learned",
+    "box": [
+      60,
+      287,
+      324,
+      23.74
+    ],
+    "size": 17
+  },
+  {
+    "slide": 4,
+    "text": "A strong validation result did not guarantee the same reliability on held-out images.",
+    "box": [
+      60,
+      317.74,
+      324,
+      42.04
+    ],
+    "size": 16
+  },
+  {
+    "slide": 4,
+    "text": "96.51%",
+    "box": [
+      484,
+      149.0968,
+      164,
+      31.06
+    ],
+    "size": 23
+  },
+  {
+    "slide": 4,
+    "text": "Validation",
+    "box": [
+      485,
+      418,
+      166,
+      21.3
+    ],
+    "size": 15
+  },
+  {
+    "slide": 4,
+    "text": "85.77%",
+    "box": [
+      698,
+      174.0136,
+      164,
+      31.06
+    ],
+    "size": 23
+  },
+  {
+    "slide": 4,
+    "text": "Held-out test",
+    "box": [
+      699,
+      418,
+      166,
+      21.3
+    ],
+    "size": 15
+  },
+  {
+    "slide": 4,
+    "text": "Accuracy; chart baseline = 0%",
+    "box": [
+      450,
+      457,
+      450,
+      17.64
+    ],
+    "size": 12
+  },
+  {
+    "slide": 5,
+    "text": "STAGE 2 / BROADER VISUAL EVIDENCE",
+    "box": [
+      44,
+      24,
+      800,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 5,
+    "text": "05 / 15",
+    "box": [
+      862,
+      24,
+      58,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 5,
+    "text": "Built several forensic signals, then tested their value",
+    "box": [
+      44,
+      60,
+      872,
+      39.6
+    ],
+    "size": 30
+  },
+  {
+    "slide": 5,
+    "text": "Forensic = patterns in the pixels and image-processing traces.",
+    "box": [
+      46,
+      111,
+      870,
+      20.08
+    ],
+    "size": 14
+  },
+  {
+    "slide": 5,
+    "text": "AI SHIELD  /  ABDELRAHMAN SOLIMAN",
+    "box": [
+      44,
+      515,
+      400,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 5,
+    "text": "Build history",
+    "box": [
+      565,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 5,
+    "text": "Results",
+    "box": [
+      681,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 5,
+    "text": "EfficientNet-B0",
+    "box": [
+      44,
+      200,
+      266,
+      31.06
+    ],
+    "size": 23
+  },
+  {
+    "slide": 5,
+    "text": "General image classifier",
+    "box": [
+      44,
+      245,
+      266,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 5,
+    "text": "Trained on balanced Tiny-GenImage; calibrated scores and saved branch outputs.",
+    "box": [
+      44,
+      307,
+      266,
+      65.22
+    ],
+    "size": 17
+  },
+  {
+    "slide": 5,
+    "text": "Real-only VAE",
+    "box": [
+      344,
+      200,
+      266,
+      31.06
+    ],
+    "size": 23
+  },
+  {
+    "slide": 5,
+    "text": "Reconstruction test",
+    "box": [
+      344,
+      245,
+      266,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 5,
+    "text": "Built the encoder, decoder and training loop; tested whether unusual reconstruction errors flag AI.",
+    "box": [
+      344,
+      307,
+      266,
+      85.96
+    ],
+    "size": 17
+  },
+  {
+    "slide": 5,
+    "text": "FaceGate",
+    "box": [
+      644,
+      200,
+      266,
+      31.06
+    ],
+    "size": 23
+  },
+  {
+    "slide": 5,
+    "text": "Use the face model only when relevant",
+    "box": [
+      644,
+      245,
+      266,
+      42.04
+    ],
+    "size": 16
+  },
+  {
+    "slide": 5,
+    "text": "Checked face presence and routed the OpenForensics score only when a valid face was found.",
+    "box": [
+      644,
+      307,
+      266,
+      65.22
+    ],
+    "size": 17
+  },
+  {
+    "slide": 5,
+    "text": "Negative finding: VAE alone AUROC ~0.470; a naive weighted blend hurt performance.",
+    "box": [
+      60,
+      451,
+      840,
+      21.3
+    ],
+    "size": 15
+  },
+  {
+    "slide": 6,
+    "text": "STAGE 3 / SEMANTIC LAYER",
+    "box": [
+      44,
+      24,
+      800,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 6,
+    "text": "06 / 15",
+    "box": [
+      862,
+      24,
+      58,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 6,
+    "text": "Built a custom attention head over image patches",
+    "box": [
+      44,
+      60,
+      872,
+      39.6
+    ],
+    "size": 30
+  },
+  {
+    "slide": 6,
+    "text": "ViT = Vision Transformer; it represents an image as a sequence of patches.",
+    "box": [
+      46,
+      111,
+      870,
+      20.08
+    ],
+    "size": 14
+  },
+  {
+    "slide": 6,
+    "text": "AI SHIELD  /  ABDELRAHMAN SOLIMAN",
+    "box": [
+      44,
+      515,
+      400,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 6,
+    "text": "Build history",
+    "box": [
+      565,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 6,
+    "text": "Results",
+    "box": [
+      681,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 6,
+    "text": "Image\npatches",
+    "box": [
+      56,
+      213,
+      106,
+      46.92
+    ],
+    "size": 18
+  },
+  {
+    "slide": 6,
+    "text": "Pretrained\nViT backbone",
+    "box": [
+      228,
+      213,
+      142,
+      46.92
+    ],
+    "size": 18
+  },
+  {
+    "slide": 6,
+    "text": "Custom attention\n+ refinement + pooling",
+    "box": [
+      436,
+      213,
+      261,
+      46.92
+    ],
+    "size": 18
+  },
+  {
+    "slide": 6,
+    "text": "Whole-image\nAI score",
+    "box": [
+      763,
+      213,
+      141,
+      46.92
+    ],
+    "size": 18
+  },
+  {
+    "slide": 6,
+    "text": "856,578",
+    "box": [
+      48,
+      338,
+      330,
+      48.14
+    ],
+    "size": 37
+  },
+  {
+    "slide": 6,
+    "text": "trainable custom-head parameters",
+    "box": [
+      50,
+      387,
+      390,
+      23.74
+    ],
+    "size": 17
+  },
+  {
+    "slide": 6,
+    "text": "Backbone frozen; custom head trained.\nImplemented multi-head attention,\nrefinement and attention pooling.",
+    "box": [
+      470,
+      339,
+      440,
+      68.88
+    ],
+    "size": 18
+  },
+  {
+    "slide": 6,
+    "text": "Visual modeling, not demonstrated caption checking or human-like reasoning.",
+    "box": [
+      60,
+      451,
+      840,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 7,
+    "text": "STAGE 3 / ORIGINAL COMBINED SYSTEM",
+    "box": [
+      44,
+      24,
+      800,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 7,
+    "text": "07 / 15",
+    "box": [
+      862,
+      24,
+      58,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 7,
+    "text": "Learned fusion improved the original benchmark",
+    "box": [
+      44,
+      60,
+      872,
+      39.6
+    ],
+    "size": 30
+  },
+  {
+    "slide": 7,
+    "text": "Original Tiny-GenImage fusion test: 1,400 images. These are historical results.",
+    "box": [
+      46,
+      111,
+      870,
+      20.08
+    ],
+    "size": 14
+  },
+  {
+    "slide": 7,
+    "text": "AI SHIELD  /  ABDELRAHMAN SOLIMAN",
+    "box": [
+      44,
+      515,
+      400,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 7,
+    "text": "Build history",
+    "box": [
+      565,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 7,
+    "text": "Results",
+    "box": [
+      681,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 7,
+    "text": "Calibrated EfficientNet",
+    "box": [
+      44,
+      170,
+      250,
+      21.3
+    ],
+    "size": 15
+  },
+  {
+    "slide": 7,
+    "text": "0.9558",
+    "box": [
+      603,
+      167,
+      85,
+      23.74
+    ],
+    "size": 17
+  },
+  {
+    "slide": 7,
+    "text": "Semantic ViT",
+    "box": [
+      44,
+      227,
+      250,
+      21.3
+    ],
+    "size": 15
+  },
+  {
+    "slide": 7,
+    "text": "0.9303",
+    "box": [
+      603,
+      224,
+      85,
+      23.74
+    ],
+    "size": 17
+  },
+  {
+    "slide": 7,
+    "text": "Forensic-only GLM",
+    "box": [
+      44,
+      284,
+      250,
+      21.3
+    ],
+    "size": 15
+  },
+  {
+    "slide": 7,
+    "text": "0.9578",
+    "box": [
+      603,
+      281,
+      85,
+      23.74
+    ],
+    "size": 17
+  },
+  {
+    "slide": 7,
+    "text": "Full GLM fusion",
+    "box": [
+      44,
+      341,
+      250,
+      21.3
+    ],
+    "size": 15
+  },
+  {
+    "slide": 7,
+    "text": "0.9819",
+    "box": [
+      603,
+      338,
+      85,
+      23.74
+    ],
+    "size": 17
+  },
+  {
+    "slide": 7,
+    "text": "17 features",
+    "box": [
+      726,
+      174,
+      185,
+      37.16
+    ],
+    "size": 28
+  },
+  {
+    "slide": 7,
+    "text": "11 forensic + 6 semantic",
+    "box": [
+      727,
+      218,
+      185,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 7,
+    "text": "94.07%",
+    "box": [
+      726,
+      276,
+      185,
+      38.38
+    ],
+    "size": 29
+  },
+  {
+    "slide": 7,
+    "text": "accuracy on this test",
+    "box": [
+      727,
+      318,
+      185,
+      21.3
+    ],
+    "size": 15
+  },
+  {
+    "slide": 7,
+    "text": "GLM = logistic regression: a learned score combiner.\nAUROC measures ranking: 0.5 is chance; 1.0 is perfect. It is not accuracy.",
+    "box": [
+      46,
+      407,
+      864,
+      37.16
+    ],
+    "size": 14
+  },
+  {
+    "slide": 7,
+    "text": "Caught 54 additional generated images with only 1 additional false positive.",
+    "box": [
+      60,
+      467,
+      840,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 8,
+    "text": "STAGE 4 / TURNING POINT",
+    "box": [
+      44,
+      24,
+      800,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 8,
+    "text": "08 / 15",
+    "box": [
+      862,
+      24,
+      58,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 8,
+    "text": "Newer images exposed a generalization problem",
+    "box": [
+      44,
+      60,
+      872,
+      39.6
+    ],
+    "size": 30
+  },
+  {
+    "slide": 8,
+    "text": "Re-ran the saved original AI Shield pipeline, without retraining it.",
+    "box": [
+      46,
+      111,
+      870,
+      20.08
+    ],
+    "size": 14
+  },
+  {
+    "slide": 8,
+    "text": "AI SHIELD  /  ABDELRAHMAN SOLIMAN",
+    "box": [
+      44,
+      515,
+      400,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 8,
+    "text": "Results",
+    "box": [
+      565,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 8,
+    "text": "Comparison",
+    "box": [
+      681,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 8,
+    "text": "ORIGINAL BENCHMARK",
+    "box": [
+      66,
+      188,
+      365,
+      17.64
+    ],
+    "size": 12
+  },
+  {
+    "slide": 8,
+    "text": "0.9819",
+    "box": [
+      66,
+      227,
+      365,
+      68.88
+    ],
+    "size": 54
+  },
+  {
+    "slide": 8,
+    "text": "AUROC on the original\nTiny-GenImage fusion test",
+    "box": [
+      68,
+      312,
+      361,
+      46.92
+    ],
+    "size": 18
+  },
+  {
+    "slide": 8,
+    "text": "NEW DATASET v1",
+    "box": [
+      526,
+      188,
+      365,
+      17.64
+    ],
+    "size": 12
+  },
+  {
+    "slide": 8,
+    "text": "~0.606",
+    "box": [
+      526,
+      227,
+      365,
+      68.88
+    ],
+    "size": 54
+  },
+  {
+    "slide": 8,
+    "text": "AUROC on the new ordinary test\n~0.599 on held-out GPT Image 2",
+    "box": [
+      528,
+      312,
+      361,
+      46.92
+    ],
+    "size": 18
+  },
+  {
+    "slide": 8,
+    "text": "Different test sets: this contrast shows the transfer problem, not a training curve.",
+    "box": [
+      47,
+      403,
+      864,
+      20.08
+    ],
+    "size": 14
+  },
+  {
+    "slide": 8,
+    "text": "Next: compare old AI Shield with Community Forensics (CF) on the same images.",
+    "box": [
+      60,
+      461,
+      840,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 9,
+    "text": "STAGE 4 / CONTROLLED BENCHMARK",
+    "box": [
+      44,
+      24,
+      800,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 9,
+    "text": "09 / 15",
+    "box": [
+      862,
+      24,
+      58,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 9,
+    "text": "Built Dataset v1 to test a harder question",
+    "box": [
+      44,
+      60,
+      872,
+      39.6
+    ],
+    "size": 30
+  },
+  {
+    "slide": 9,
+    "text": "Fixed image identities and splits; evaluated a generator excluded from our fine-tuning.",
+    "box": [
+      46,
+      111,
+      870,
+      20.08
+    ],
+    "size": 14
+  },
+  {
+    "slide": 9,
+    "text": "AI SHIELD  /  ABDELRAHMAN SOLIMAN",
+    "box": [
+      44,
+      515,
+      400,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 9,
+    "text": "Dataset notebook",
+    "box": [
+      565,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 9,
+    "text": "Results",
+    "box": [
+      681,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 9,
+    "text": "5,124",
+    "box": [
+      44,
+      168,
+      300,
+      78.64
+    ],
+    "size": 62
+  },
+  {
+    "slide": 9,
+    "text": "balanced images",
+    "box": [
+      48,
+      251,
+      270,
+      28.62
+    ],
+    "size": 21
+  },
+  {
+    "slide": 9,
+    "text": "2,562 real\n2,562 generated",
+    "box": [
+      48,
+      297,
+      270,
+      51.8
+    ],
+    "size": 20
+  },
+  {
+    "slide": 9,
+    "text": "Training: 2,990",
+    "box": [
+      378,
+      258,
+      250,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 9,
+    "text": "Validation: 640",
+    "box": [
+      665,
+      258,
+      250,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 9,
+    "text": "Ordinary test: 640",
+    "box": [
+      378,
+      330,
+      250,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 9,
+    "text": "Unseen generator: 854",
+    "box": [
+      665,
+      330,
+      250,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 9,
+    "text": "Five generator families in development.\nGPT Image 2 reserved for a separate test.",
+    "box": [
+      359,
+      414,
+      555,
+      44.48
+    ],
+    "size": 17
+  },
+  {
+    "slide": 9,
+    "text": "Held out from this project's training/validation; no claim about the pretrained model's full history.",
+    "box": [
+      46,
+      474,
+      866,
+      16.42
+    ],
+    "size": 11
+  },
+  {
+    "slide": 10,
+    "text": "STAGE 5 / ADAPTING COMMUNITY FORENSICS",
+    "box": [
+      44,
+      24,
+      800,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 10,
+    "text": "10 / 15",
+    "box": [
+      862,
+      24,
+      58,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 10,
+    "text": "Fine-tuned the detector in two controlled stages",
+    "box": [
+      44,
+      60,
+      872,
+      39.6
+    ],
+    "size": 30
+  },
+  {
+    "slide": 10,
+    "text": "The checkpoint and decision threshold were selected on validation data.",
+    "box": [
+      46,
+      111,
+      870,
+      20.08
+    ],
+    "size": 14
+  },
+  {
+    "slide": 10,
+    "text": "AI SHIELD  /  ABDELRAHMAN SOLIMAN",
+    "box": [
+      44,
+      515,
+      400,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 10,
+    "text": "Training notebook",
+    "box": [
+      565,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 10,
+    "text": "Results",
+    "box": [
+      681,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 10,
+    "text": "Stage 1: classifier head",
+    "box": [
+      60,
+      176,
+      327,
+      23.74
+    ],
+    "size": 17
+  },
+  {
+    "slide": 10,
+    "text": "Three epochs; keep the pretrained visual backbone fixed.",
+    "box": [
+      60,
+      206.74,
+      327,
+      42.04
+    ],
+    "size": 16
+  },
+  {
+    "slide": 10,
+    "text": "Stage 2: final blocks",
+    "box": [
+      60,
+      294,
+      327,
+      23.74
+    ],
+    "size": 17
+  },
+  {
+    "slide": 10,
+    "text": "Three epochs; train the final two transformer blocks, normalization and head.",
+    "box": [
+      60,
+      324.74,
+      327,
+      42.04
+    ],
+    "size": 16
+  },
+  {
+    "slide": 10,
+    "text": "0.50",
+    "box": [
+      407,
+      381.0,
+      37,
+      16.42
+    ],
+    "size": 11
+  },
+  {
+    "slide": 10,
+    "text": "0.75",
+    "box": [
+      407,
+      278.5,
+      37,
+      16.42
+    ],
+    "size": 11
+  },
+  {
+    "slide": 10,
+    "text": "1.00",
+    "box": [
+      407,
+      176.0,
+      37,
+      16.42
+    ],
+    "size": 11
+  },
+  {
+    "slide": 10,
+    "text": "0.8780",
+    "box": [
+      430,
+      196.01999999999998,
+      120,
+      28.62
+    ],
+    "size": 21
+  },
+  {
+    "slide": 10,
+    "text": "Baseline",
+    "box": [
+      425,
+      409,
+      130,
+      20.08
+    ],
+    "size": 14
+  },
+  {
+    "slide": 10,
+    "text": "0.9804",
+    "box": [
+      605,
+      154.03599999999997,
+      120,
+      28.62
+    ],
+    "size": 21
+  },
+  {
+    "slide": 10,
+    "text": "Stage 1",
+    "box": [
+      600,
+      409,
+      130,
+      20.08
+    ],
+    "size": 14
+  },
+  {
+    "slide": 10,
+    "text": "0.9870",
+    "box": [
+      780,
+      151.33,
+      120,
+      28.62
+    ],
+    "size": 21
+  },
+  {
+    "slide": 10,
+    "text": "Stage 2",
+    "box": [
+      775,
+      409,
+      130,
+      20.08
+    ],
+    "size": 14
+  },
+  {
+    "slide": 10,
+    "text": "Validation AUROC improved from 0.8780 to 0.9870.",
+    "box": [
+      60,
+      462,
+      840,
+      23.74
+    ],
+    "size": 17
+  },
+  {
+    "slide": 11,
+    "text": "STAGE 5 / SAME-IMAGE EVALUATION",
+    "box": [
+      44,
+      24,
+      800,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 11,
+    "text": "11 / 15",
+    "box": [
+      862,
+      24,
+      58,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 11,
+    "text": "Fine-tuned CF became the strongest detector",
+    "box": [
+      44,
+      60,
+      872,
+      39.6
+    ],
+    "size": 30
+  },
+  {
+    "slide": 11,
+    "text": "Dataset v1 final evaluation. AUROC is ranking performance, not percentage accuracy.",
+    "box": [
+      46,
+      111,
+      870,
+      20.08
+    ],
+    "size": 14
+  },
+  {
+    "slide": 11,
+    "text": "AI SHIELD  /  ABDELRAHMAN SOLIMAN",
+    "box": [
+      44,
+      515,
+      400,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 11,
+    "text": "Results",
+    "box": [
+      565,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 11,
+    "text": "Training notebook",
+    "box": [
+      681,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 11,
+    "text": "Comparison",
+    "box": [
+      797,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 11,
+    "text": "MODEL",
+    "box": [
+      44,
+      167,
+      280,
+      17.64
+    ],
+    "size": 12
+  },
+  {
+    "slide": 11,
+    "text": "ORDINARY TEST AUROC",
+    "box": [
+      365,
+      167,
+      255,
+      17.64
+    ],
+    "size": 12
+  },
+  {
+    "slide": 11,
+    "text": "GPT IMAGE 2 AUROC",
+    "box": [
+      659,
+      167,
+      255,
+      17.64
+    ],
+    "size": 12
+  },
+  {
+    "slide": 11,
+    "text": "Old AI Shield fusion",
+    "box": [
+      56,
+      210,
+      285,
+      24.96
+    ],
+    "size": 18
+  },
+  {
+    "slide": 11,
+    "text": "0.6060",
+    "box": [
+      533,
+      209,
+      90,
+      26.18
+    ],
+    "size": 19
+  },
+  {
+    "slide": 11,
+    "text": "0.5990",
+    "box": [
+      828,
+      209,
+      90,
+      26.18
+    ],
+    "size": 19
+  },
+  {
+    "slide": 11,
+    "text": "Original CF",
+    "box": [
+      56,
+      278,
+      285,
+      24.96
+    ],
+    "size": 18
+  },
+  {
+    "slide": 11,
+    "text": "0.8860",
+    "box": [
+      533,
+      277,
+      90,
+      26.18
+    ],
+    "size": 19
+  },
+  {
+    "slide": 11,
+    "text": "0.9555",
+    "box": [
+      828,
+      277,
+      90,
+      26.18
+    ],
+    "size": 19
+  },
+  {
+    "slide": 11,
+    "text": "Fine-tuned CF",
+    "box": [
+      56,
+      346,
+      285,
+      24.96
+    ],
+    "size": 18
+  },
+  {
+    "slide": 11,
+    "text": "0.9884",
+    "box": [
+      533,
+      345,
+      90,
+      26.18
+    ],
+    "size": 19
+  },
+  {
+    "slide": 11,
+    "text": "0.9946",
+    "box": [
+      828,
+      345,
+      90,
+      26.18
+    ],
+    "size": 19
+  },
+  {
+    "slide": 11,
+    "text": "Fine-tuned accuracy: 95.16% ordinary test | 96.60% held-out-generator test.",
+    "box": [
+      47,
+      400,
+      863,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 11,
+    "text": "Real-image false alarms: 20.63% -> 3.75% on the ordinary test.",
+    "box": [
+      60,
+      443,
+      840,
+      23.74
+    ],
+    "size": 17
+  },
+  {
+    "slide": 11,
+    "text": "Each CF model uses its validation-selected max-F1 cutoff; bar scales run from 0 to 1.",
+    "box": [
+      60,
+      477,
+      840,
+      13.98
+    ],
+    "size": 9
+  },
+  {
+    "slide": 12,
+    "text": "STAGE 5 / TEST THE ADDED COMPLEXITY",
+    "box": [
+      44,
+      24,
+      800,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 12,
+    "text": "12 / 15",
+    "box": [
+      862,
+      24,
+      58,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 12,
+    "text": "More models did not improve this detector",
+    "box": [
+      44,
+      60,
+      872,
+      39.6
+    ],
+    "size": 30
+  },
+  {
+    "slide": 12,
+    "text": "New fusion: fine-tuned CF + calibrated EfficientNet + FaceGate/OpenForensics.",
+    "box": [
+      46,
+      111,
+      870,
+      20.08
+    ],
+    "size": 14
+  },
+  {
+    "slide": 12,
+    "text": "AI SHIELD  /  ABDELRAHMAN SOLIMAN",
+    "box": [
+      44,
+      515,
+      400,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 12,
+    "text": "Fusion study",
+    "box": [
+      565,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 12,
+    "text": "Results",
+    "box": [
+      681,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 12,
+    "text": "MODEL",
+    "box": [
+      58,
+      183,
+      410,
+      17.64
+    ],
+    "size": 12
+  },
+  {
+    "slide": 12,
+    "text": "TEST AUROC",
+    "box": [
+      504,
+      183,
+      160,
+      17.64
+    ],
+    "size": 12
+  },
+  {
+    "slide": 12,
+    "text": "GPT IMAGE 2 AUROC",
+    "box": [
+      708,
+      183,
+      195,
+      17.64
+    ],
+    "size": 12
+  },
+  {
+    "slide": 12,
+    "text": "Fine-tuned CF alone",
+    "box": [
+      60,
+      236,
+      420,
+      31.06
+    ],
+    "size": 23
+  },
+  {
+    "slide": 12,
+    "text": "0.9884",
+    "box": [
+      505,
+      234,
+      160,
+      37.16
+    ],
+    "size": 28
+  },
+  {
+    "slide": 12,
+    "text": "0.9946",
+    "box": [
+      709,
+      234,
+      190,
+      37.16
+    ],
+    "size": 28
+  },
+  {
+    "slide": 12,
+    "text": "New fusion",
+    "box": [
+      60,
+      319,
+      420,
+      31.06
+    ],
+    "size": 23
+  },
+  {
+    "slide": 12,
+    "text": "0.9854",
+    "box": [
+      505,
+      317,
+      160,
+      37.16
+    ],
+    "size": 28
+  },
+  {
+    "slide": 12,
+    "text": "0.9936",
+    "box": [
+      709,
+      317,
+      190,
+      37.16
+    ],
+    "size": 28
+  },
+  {
+    "slide": 12,
+    "text": "The combination was slightly worse on both sets.\nThis is a separate experiment from the original 17-feature GLM.",
+    "box": [
+      48,
+      409,
+      860,
+      42.04
+    ],
+    "size": 16
+  },
+  {
+    "slide": 12,
+    "text": "Decision: select CF alone; pause further model-fusion experiments.",
+    "box": [
+      60,
+      466,
+      840,
+      23.74
+    ],
+    "size": 17
+  },
+  {
+    "slide": 13,
+    "text": "STAGE 6 / REPEATABLE INFERENCE",
+    "box": [
+      44,
+      24,
+      800,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 13,
+    "text": "13 / 15",
+    "box": [
+      862,
+      24,
+      58,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 13,
+    "text": "Locked the detector before building around it",
+    "box": [
+      44,
+      60,
+      872,
+      39.6
+    ],
+    "size": 30
+  },
+  {
+    "slide": 13,
+    "text": "Frozen = same weights, same image preparation, same decision cutoff.",
+    "box": [
+      46,
+      111,
+      870,
+      20.08
+    ],
+    "size": 14
+  },
+  {
+    "slide": 13,
+    "text": "AI SHIELD  /  ABDELRAHMAN SOLIMAN",
+    "box": [
+      44,
+      515,
+      400,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 13,
+    "text": "Freeze checks",
+    "box": [
+      565,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 13,
+    "text": "Saved artifacts",
+    "box": [
+      681,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 13,
+    "text": "01",
+    "box": [
+      60,
+      181,
+      47,
+      27.4
+    ],
+    "size": 20
+  },
+  {
+    "slide": 13,
+    "text": "Checkpoint hash",
+    "box": [
+      119,
+      183,
+      255,
+      24.96
+    ],
+    "size": 18
+  },
+  {
+    "slide": 13,
+    "text": "A digital fingerprint confirms the exact fine-tuned model file.",
+    "box": [
+      385,
+      181,
+      510,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 13,
+    "text": "02",
+    "box": [
+      60,
+      249,
+      47,
+      27.4
+    ],
+    "size": 20
+  },
+  {
+    "slide": 13,
+    "text": "Exact preprocessing",
+    "box": [
+      119,
+      251,
+      255,
+      24.96
+    ],
+    "size": 18
+  },
+  {
+    "slide": 13,
+    "text": "Orientation -> RGB -> resize -> crop -> normalization.",
+    "box": [
+      385,
+      249,
+      510,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 13,
+    "text": "03",
+    "box": [
+      60,
+      317,
+      47,
+      27.4
+    ],
+    "size": 20
+  },
+  {
+    "slide": 13,
+    "text": "Fixed threshold",
+    "box": [
+      119,
+      319,
+      255,
+      24.96
+    ],
+    "size": 18
+  },
+  {
+    "slide": 13,
+    "text": "About 0.634, selected using validation F1 (precision/recall balance).",
+    "box": [
+      385,
+      317,
+      510,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 13,
+    "text": "04",
+    "box": [
+      60,
+      385,
+      47,
+      27.4
+    ],
+    "size": 20
+  },
+  {
+    "slide": 13,
+    "text": "Reference-image checks",
+    "box": [
+      119,
+      387,
+      255,
+      24.96
+    ],
+    "size": 18
+  },
+  {
+    "slide": 13,
+    "text": "Six saved examples matched scores within tolerance and kept their labels.",
+    "box": [
+      385,
+      385,
+      510,
+      42.04
+    ],
+    "size": 16
+  },
+  {
+    "slide": 13,
+    "text": "These are implementation-consistency checks, not a new accuracy benchmark.",
+    "box": [
+      48,
+      464,
+      860,
+      20.08
+    ],
+    "size": 14
+  },
+  {
+    "slide": 14,
+    "text": "STAGE 6 / CURRENT LOCAL SYSTEM",
+    "box": [
+      44,
+      24,
+      800,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 14,
+    "text": "14 / 15",
+    "box": [
+      862,
+      24,
+      58,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 14,
+    "text": "Added recorded provenance beside the AI score",
+    "box": [
+      44,
+      60,
+      872,
+      39.6
+    ],
+    "size": 30
+  },
+  {
+    "slide": 14,
+    "text": "FastAPI = the Python service that runs both checks for the future website.",
+    "box": [
+      46,
+      111,
+      870,
+      20.08
+    ],
+    "size": 14
+  },
+  {
+    "slide": 14,
+    "text": "AI SHIELD  /  ABDELRAHMAN SOLIMAN",
+    "box": [
+      44,
+      515,
+      400,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 14,
+    "text": "Project notes",
+    "box": [
+      565,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 14,
+    "text": "Freeze checks",
+    "box": [
+      681,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 14,
+    "text": "Original\nupload",
+    "box": [
+      57,
+      263,
+      124,
+      51.8
+    ],
+    "size": 20
+  },
+  {
+    "slide": 14,
+    "text": "CF detector",
+    "box": [
+      299,
+      186,
+      290,
+      28.62
+    ],
+    "size": 21
+  },
+  {
+    "slide": 14,
+    "text": "Visual AI-generation score",
+    "box": [
+      299,
+      221,
+      290,
+      21.3
+    ],
+    "size": 15
+  },
+  {
+    "slide": 14,
+    "text": "ExifTool + C2PA",
+    "box": [
+      299,
+      315,
+      290,
+      28.62
+    ],
+    "size": 21
+  },
+  {
+    "slide": 14,
+    "text": "Stored image details + signed\ncreation/editing record checks",
+    "box": [
+      299,
+      350,
+      290,
+      42.04
+    ],
+    "size": 16
+  },
+  {
+    "slide": 14,
+    "text": "Combined\nevidence report",
+    "box": [
+      725,
+      264,
+      175,
+      54.24
+    ],
+    "size": 21
+  },
+  {
+    "slide": 14,
+    "text": "38 tests passed | 6 reference images matched through the live upload API.",
+    "box": [
+      48,
+      434,
+      860,
+      23.74
+    ],
+    "size": 17
+  },
+  {
+    "slide": 14,
+    "text": "EXIF = stored camera/software/date details. C2PA = signed creation/editing records.",
+    "box": [
+      48,
+      465,
+      860,
+      16.42
+    ],
+    "size": 11
+  },
+  {
+    "slide": 14,
+    "text": "Missing metadata = unknown. Photoshop is not proof of AI. Credential validity is not scene truth.",
+    "box": [
+      48,
+      483,
+      860,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 15,
+    "text": "CURRENT STATE / DISCUSSION",
+    "box": [
+      44,
+      24,
+      800,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 15,
+    "text": "15 / 15",
+    "box": [
+      862,
+      24,
+      58,
+      15.2
+    ],
+    "size": 10
+  },
+  {
+    "slide": 15,
+    "text": "Working locally; evaluation and deployment come next",
+    "box": [
+      44,
+      60,
+      872,
+      39.6
+    ],
+    "size": 30
+  },
+  {
+    "slide": 15,
+    "text": "The hosted Hugging Face demo still uses the older system.",
+    "box": [
+      46,
+      111,
+      870,
+      20.08
+    ],
+    "size": 14
+  },
+  {
+    "slide": 15,
+    "text": "AI SHIELD  /  ABDELRAHMAN SOLIMAN",
+    "box": [
+      44,
+      515,
+      400,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 15,
+    "text": "Project notes",
+    "box": [
+      565,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 15,
+    "text": "Repository",
+    "box": [
+      681,
+      515,
+      115,
+      13.37
+    ],
+    "size": 8.5
+  },
+  {
+    "slide": 15,
+    "text": "WORKING NOW",
+    "box": [
+      44,
+      198,
+      268,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 15,
+    "text": "Fine-tuned CF detector\nRepeatable inference\nEXIF / C2PA reporting\nCombined local upload API",
+    "box": [
+      44,
+      244,
+      268,
+      90.84
+    ],
+    "size": 18
+  },
+  {
+    "slide": 15,
+    "text": "NEXT",
+    "box": [
+      344,
+      198,
+      268,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 15,
+    "text": "JPEG / resize robustness\nArtwork and edited-photo tests\nPublish code + build website\nPrepare public deployment",
+    "box": [
+      344,
+      244,
+      268,
+      90.84
+    ],
+    "size": 18
+  },
+  {
+    "slide": 15,
+    "text": "LATER",
+    "box": [
+      644,
+      198,
+      268,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 15,
+    "text": "Image / claim consistency\nShort-video support\nBroader source evaluation",
+    "box": [
+      644,
+      244,
+      268,
+      68.88
+    ],
+    "size": 18
+  },
+  {
+    "slide": 15,
+    "text": "For discussion",
+    "box": [
+      60,
+      419,
+      840,
+      22.52
+    ],
+    "size": 16
+  },
+  {
+    "slide": 15,
+    "text": "Which evaluation would make the capstone most convincing?\nHow should uncertain or conflicting evidence be presented?",
+    "box": [
+      60,
+      447,
+      840,
+      42.04
+    ],
+    "size": 16
+  }
+]
